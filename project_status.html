@@ -132,9 +132,7 @@
     <script>
         function projectTracker() {
             return {
-                subAgents: [
-                    // Beispiel: { id: 1, task: 'Dashboard UI Refactoring', model: 'Claude 3.5 Sonnet', status: 'Running' }
-                ],
+                subAgents: [],
                 tasks: [
                     {
                         id: 1,
@@ -186,19 +184,11 @@
                     },
                     {
                         id: 7,
-                        title: 'Erinnerungen & Automatisierung',
-                        desc: 'Automatische Benachrichtigungen vor Schichtbeginn.',
-                        status: 'pending',
-                        subitems: ['Cronjobs einrichten', 'Push-Nachrichten via Telegram'],
-                        comments: 'Nächster Schritt: Ich werde einen Hintergrund-Job (Cron) einrichten, der täglich prüft, ob morgen eine Schicht ansteht, und dich benachrichtigt.'
-                    },
-                    {
-                        id: 8,
-                        title: 'Metall-Preis Dashboard',
-                        desc: 'Rechner für Kupfer, Messing und Co. inkl. Marktpreisen.',
+                        title: 'Kabel-Schrott Dashboard',
+                        desc: 'Spezialisierter Rechner für Kabelschrott (Region Ruhrgebiet).',
                         status: 'done',
-                        subitems: ['Preise recherchiert', 'Interaktiver Rechner gebaut', 'Dunkles UI Design'],
-                        comments: 'Dashboard ist fertig und berechnet den Wert basierend auf aktuellen Schrottpreisen (Kupfer Millberry ca. 7,80€).'
+                        subitems: ['Preise für Haushalts- & Erdkabel', 'Reinheitsgrade integriert', 'Dortmund/Bochum Marktwerte'],
+                        comments: 'Dashboard fokussiert sich rein auf Kabelschrott mit Realwerten lokaler Händler (ca. 2,35€ - 4,80€ je nach Sorte).'
                     }
                 ],
 

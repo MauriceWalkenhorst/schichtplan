@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kabel-Check | Walter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .cable-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .cable-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.4); }
+        .selected { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.1) !important; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="p-4 md:p-10 min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black" x-data="cableApp()">
+
+    <div class="max-w-5xl mx-auto">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-8">
+            <div>
+                <h1 class="text-5xl font-black tracking-tighter text-white mb-2 uppercase italic">Kabel<span class="text-blue-500">Check</span></h1>
+                <p class="text-slate-400 font-medium">Rechner für Kabelschrott • Region Dortmund/Bochum</p>
+            </div>
+            <div class="glass p-5 rounded-3xl border border-blue-500/20">
+                <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Marktpreis-Niveau</div>
+                <div class="text-xl font-black text-blue-400">Aktualisiert Feb 2026</div>
+            </div>
+        </div>
+
+        <!-- Cable Types Selection -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+            <template x-for="cable in cables" :key="cable.id">
+                <div @click="selectedCable = cable.id" 
+                     class="cable-card glass rounded-3xl p-6 border"
+                     :class="selectedCable === cable.id ? 'selected shadow-lg shadow-blue-500/10' : 'border-slate-800'">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl" x-text="cable.icon"></span>
+                        <span class="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded" x-text="cable.purity"></span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1" x-text="cable.name"></h3>
+                    <p class="text-xs text-slate-500 mb-4 leading-tight" x-text="cable.desc"></p>
+                    <div class="text-2xl font-black text-white" x-text="formatPrice(cable.price) + ' €/kg'"></div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Calculator Area -->
+        <div class="glass rounded-[3rem] p-8 md:p-12 border border-slate-800 relative overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <div class="space-y-8">
+                    <h2 class="text-3xl font-bold text-white leading-tight underline decoration-blue-500 decoration-4 underline-offset-8">Erlös-Rechner</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 italic">Gesamtgewicht der Kabel (kg)</label>
+                            <div class="relative">
+                                <input type="number" x-model="inputWeight" placeholder="0.00" 
+                                       class="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl p-6 text-5xl font-black text-white focus:border-blue-500 focus:outline-none transition-all">
+                                <div class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-700 font-black text-2xl">KG</div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-blue-500/5 border border-blue-500/10 flex items-center justify-between">
+                            <div>
+                                <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Gewähltes Material</div>
+                                <div class="font-bold text-white" x-text="getSelectedCable().name"></div>
+                            </div>
+                            <div class="text-3xl" x-text="getSelectedCable().icon"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center lg:text-right">
+                    <div class="text-slate-500 font-medium mb-2 uppercase tracking-tighter italic text-sm">Voraussichtlicher Ankaufspreis</div>
+                    <div class="text-8xl font-black text-white tracking-tighter transition-all" x-text="formatPrice(totalValue) + ' €'"></div>
+                    <p class="mt-8 text-[10px] text-slate-500 uppercase tracking-[0.2em] leading-relaxed">
+                        Preise sind Richtwerte für Schrotthändler im Ruhrgebiet <br> (Dortmund / Bochum / Herne)
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 flex justify-between items-center text-slate-700 text-[10px] font-bold uppercase tracking-widest">
+            <span>Walter Kabel-Bot v2.1</span>
+            <div class="flex gap-6">
+                <a href="https://mauricewalkenhorst.github.io/schichtplan/metal_dashboard.html" class="hover:text-white transition-colors">← Alle Metalle</a>
+                <span>© 2026 Maurice W.</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function cableApp() {
+            return {
+                inputWeight: '',
+                selectedCable: 1,
+                cables: [
+                    { id: 1, name: 'Kupferkabel (Haushaltsmix)', purity: '~38%', price: 2.35, icon: '🔌', desc: 'Normale Stromkabel, PC-Kabel, Stecker noch dran.' },
+                    { id: 2, name: 'Kupferkabel (schwer)', purity: '~55%', price: 3.40, icon: '🏗️', desc: 'Dicke Erdkabel oder Starkstromkabel ohne Stecker.' },
+                    { id: 3, name: 'PVC-Kabel (einadrig)', purity: '~70%', price: 4.80, icon: '🧵', desc: 'Installationskabel, abgemantelt (nur noch Einzeladern).' }
+                ],
+
+                get totalValue() {
+                    const weight = parseFloat(this.inputWeight) || 0;
+                    const cable = this.cables.find(c => c.id === this.selectedCable);
+                    return weight * cable.price;
+                },
+
+                getSelectedCable() {
+                    return this.cables.find(c => c.id === this.selectedCable);
+                },
+
+                formatPrice(val) {
+                    return parseFloat(val).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
