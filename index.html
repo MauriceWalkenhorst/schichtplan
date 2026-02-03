@@ -147,8 +147,8 @@
                             const diffDays = Math.floor((first.startDate - now) / (1000 * 60 * 60 * 24));
                             
                             this.nextShift = {
-                                type: first.title.replace(' q: ', '').replace(/\[.*\]\s*/, '').split(' ')[1] || 'Schicht',
-                                timeRange: first.startDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr',
+                                type: first.title.replace(' q: ', '').replace(/\[.*\]\s*/, '').trim() || 'Schicht',
+                                timeRange: first.startDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' - ' + new Date(first.end).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr',
                                 location: first.location.split(': ')[1] || 'UCI Kino',
                                 relative: diffDays === 0 ? 'Heute' : (diffDays === 1 ? 'Morgen' : 'In ' + diffDays + ' Tagen')
                             };
