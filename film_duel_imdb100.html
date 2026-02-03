@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0c0e">
+    <title>IMDb Top 100 Duel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        
+        .aurora {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% 0%, rgba(234, 179, 8, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 20% 80%, rgba(239, 68, 68, 0.1), transparent),
+                linear-gradient(180deg, #0a0c0e 0%, #14181c 100%);
+        }
+        
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .film-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .film-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); }
+        .film-card:active { transform: translateY(-4px) scale(0.98); }
+        
+        .vs-badge { animation: pulse-vs 2s ease-in-out infinite; }
+        @keyframes pulse-vs { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
+        
+        .progress-segment {
+            transition: all 0.3s ease;
+        }
+        .progress-segment.active {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+        
+        /* List filling animation */
+        .rank-item {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fill-in 0.5s ease forwards;
+        }
+        
+        @keyframes fill-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .counter-animation {
+            animation: count-up 1s ease-out;
+        }
+        
+        @keyframes count-up {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="text-white antialiased overflow-x-hidden" x-data="filmDuel()" x-init="init()">
+    
+    <div class="aurora"></div>
+    
+    <!-- Progress Steps -->
+    <div class="fixed top-0 left-0 right-0 z-50 px-4 pt-4 pb-2 bg-gradient-to-b from-black/80 to-transparent">
+        <div class="max-w-md mx-auto flex gap-1" x-show="mode === 'duel'">
+            <template x-for="i in 10" :key="i">
+                <div class="flex-1 h-1.5 rounded-full transition-all duration-300"
+                     :class="i <= comparisons ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-white/10'"></div>
+            </template>
+        </div>
+    </div>
+    
+    <div class="min-h-screen px-4 pt-16 pb-8 max-w-4xl mx-auto">
+        
+        <!-- Header -->
+        <header class="mb-6 text-center" x-show="mode === 'duel'">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-4">
+                <span class="text-yellow-400 font-bold">IMDb</span>
+                <span class="text-slate-400">|</span>
+                <span class="text-sm">Top 100</span>
+            </div>
+            <h1 class="font-display text-3xl font-bold">Welcher Film ist besser?</h1>
+            <p class="text-slate-400 mt-2">Runde <span x-text="comparisons + 1" class="text-yellow-400 font-bold"></span> von 10</p>
+        </header>
+        
+        <!-- MODE: DUEL -->
+        <div x-show="mode === 'duel'" x-cloak>
+            <div class="grid md:grid-cols-2 gap-4 md:gap-6 relative">
+                <!-- VS Badge -->
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center vs-badge shadow-2xl shadow-orange-500/40 border-4 border-black">
+                    <span class="font-black text-black text-xl">VS</span>
+                </div>
+                
+                <!-- Film A -->
+                <div @click="chooseFilm(currentPair[0])" 
+                     class="film-card glass-card rounded-3xl overflow-hidden group"
+                     :class="{ 'ring-2 ring-yellow-400': selected === 'A' }">
+                    <div class="aspect-[2/3] relative overflow-hidden">
+                        <img :src="tmdbBase + currentPair[0]?.poster" 
+                             @error="$event.target.src = 'https://via.placeholder.com/400x600/1c2228/9ab?text=' + encodeURIComponent(currentPair[0]?.title)"
+                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                             :alt="currentPair[0]?.title">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-5">
+                            <h2 class="font-display text-2xl font-bold mb-1 leading-tight" x-text="currentPair[0]?.title"></h2>
+                            <p class="text-sm text-slate-300" x-text="currentPair[0]?.year + ' · ' + currentPair[0]?.director"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Film B -->
+                <div @click="chooseFilm(currentPair[1])" 
+                     class="film-card glass-card rounded-3xl overflow-hidden group"
+                     :class="{ 'ring-2 ring-yellow-400': selected === 'B' }">
+                    <div class="aspect-[2/3] relative overflow-hidden">
+                        <img :src="tmdbBase + currentPair[1]?.poster" 
+                             @error="$event.target.src = 'https://via.placeholder.com/400x600/1c2228/9ab?text=' + encodeURIComponent(currentPair[1]?.title)"
+                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                             :alt="currentPair[1]?.title">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-5">
+                            <h2 class="font-display text-2xl font-bold mb-1 leading-tight" x-text="currentPair[1]?.title"></h2>
+                            <p class="text-sm text-slate-300" x-text="currentPair[1]?.year + ' · ' + currentPair[1]?.director"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <p class="text-xs text-slate-500 mb-2">Oder überspringen</p>
+                <button @click="skipPair()" class="px-6 py-2 rounded-full glass-card text-slate-400 hover:text-white text-sm transition-colors">
+                    Beide gleich gut
+                </button>
+            </div>
+        </div>
+        
+        <!-- MODE: BUILDING LIST -->
+        <div x-show="mode === 'building'" x-cloak class="text-center py-12">
+            <div class="w-24 h-24 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center animate-pulse">
+                <svg class="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+            </div>
+            <h2 class="font-display text-2xl font-bold mb-2">Deine Topliste wird erstellt...</h2>
+            <p class="text-slate-400">Auswertung deiner <span x-text="comparisons"></span> Entscheidungen</p>
+            
+            <div class="mt-8 max-w-xs mx-auto">
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MODE: RESULTS -->
+        <div x-show="mode === 'results'" x-cloak>
+            <div class="text-center mb-8">
+                <div class="inline-block w-20 h-20 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center mb-4 shadow-2xl shadow-orange-500/30">
+                    <span class="text-4xl">🏆</span>
+                </div>
+                <h2 class="font-display text-3xl font-bold mb-2">Deine persönliche IMDb Top 20</h2>
+                <p class="text-slate-400">Basierend auf deinen 10 Entscheidungen</p>
+            </div>
+            
+            <!-- Top 3 Podium -->
+            <div class="flex justify-center items-end gap-3 mb-8" x-show="rankings.length >= 3">
+                <!-- 2nd -->
+                <div class="text-center pb-4">
+                    <div class="glass-card rounded-2xl p-2 mb-2 w-28 border border-slate-600">
+                        <img :src="tmdbBase + rankings[1]?.poster" 
+                             @error="$event.target.src = 'https://via.placeholder.com/150x225/1c2228/9ab?text=?'"
+                             class="w-full rounded-lg aspect-[2/3] object-cover">
+                    </div>
+                    <div class="w-8 h-8 mx-auto rounded-full bg-slate-700 flex items-center justify-center text-lg font-black mb-1">2</div>
+                    <p class="text-xs truncate w-28" x-text="rankings[1]?.title"></p>
+                </div>
+                
+                <!-- 1st -->
+                <div class="text-center -mt-8">
+                    <div class="text-5xl mb-2">👑</div>
+                    <div class="glass-card rounded-2xl p-3 mb-2 w-36 border-2 border-yellow-500 shadow-xl shadow-yellow-500/20">
+                        <img :src="tmdbBase + rankings[0]?.poster" 
+                             @error="$event.target.src = 'https://via.placeholder.com/150x225/1c2228/9ab?text=?'"
+                             class="w-full rounded-lg aspect-[2/3] object-cover">
+                    </div>
+                    <div class="w-10 h-10 mx-auto rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-xl font-black text-black mb-1">1</div>
+                    <p class="text-sm font-bold truncate w-36" x-text="rankings[0]?.title"></p>
+                </div>
+                
+                <!-- 3rd -->
+                <div class="text-center pb-4">
+                    <div class="glass-card rounded-2xl p-2 mb-2 w-28 border border-orange-900">
+                        <img :src="tmdbBase + rankings[2]?.poster" 
+                             @error="$event.target.src = 'https://via.placeholder.com/150x225/1c2228/9ab?text=?'"
+                             class="w-full rounded-lg aspect-[2/3] object-cover">
+                    </div>
+                    <div class="w-8 h-8 mx-auto rounded-full bg-orange-900 flex items-center justify-center text-lg font-black mb-1">3</div>
+                    <p class="text-xs truncate w-28" x-text="rankings[2]?.title"></p>
+                </div>
+            </div>
+            
+            <!-- Rank 4-20 List -->
+            <div class="glass-card rounded-3xl p-4">
+                <h3 class="font-semibold text-sm text-slate-400 mb-4 uppercase tracking-wider">Platz 4-20</h3>
+                <div class="space-y-2">
+                    <template x-for="(film, index) in rankings.slice(3, 20)" :key="film.id">
+                        <div class="rank-item flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                             :style="'animation-delay: ' + (index * 0.05) + 's'">
+                            <span class="w-6 text-center font-display font-bold text-slate-500" x-text="index + 4"></span>
+                            <img :src="tmdbBase + film.poster" 
+                                 @error="$event.target.src = 'https://via.placeholder.com/60x90/1c2228/9ab?text=?'"
+                                 class="w-10 h-14 rounded object-cover">
+                            <div class="flex-1 min-w-0">
+                                <p class="font-medium text-sm truncate" x-text="film.title"></p>
+                                <p class="text-xs text-slate-500" x-text="film.year"></p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-sm text-yellow-400" x-text="Math.round(film.score)"></p>
+                                <p class="text-xs text-slate-600" x-text="film.wins + 'S/' + film.losses + 'N'"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-2 gap-4 mt-6">
+                <div class="glass-card rounded-2xl p-4 text-center">
+                    <p class="text-3xl font-bold text-yellow-400 counter-animation" x-text="rankings[0]?.title.split(' ')[0]">...</p>
+                    <p class="text-xs text-slate-400 mt-1">Dein Sieger</p>
+                </div>
+                <div class="glass-card rounded-2xl p-4 text-center">
+                    <p class="text-3xl font-bold text-orange-400 counter-animation" x-text="rankings.filter(f => f.wins > 0).length">...</p>
+                    <p class="text-xs text-slate-400 mt-1">Filme bewertet</p>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-4 mt-8">
+                <button @click="shareResults()" class="flex-1 py-4 rounded-xl glass-card text-white font-medium flex items-center justify-center gap-2 hover:bg-white/10 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                    </svg>
+                    Teilen
+                </button>
+                <button @click="restart()" class="flex-1 py-4 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-orange-500/30">
+                    Neue 10 Runden
+                </button>
+            </div>
+            
+            <p class="text-center text-xs text-slate-600 mt-4">
+                Jede Session erstellt eine neue Rangliste basierend auf 10 zufälligen Duellen
+            </p>
+        </div>
+        
+    </div>
+    
+    <script>
+        function filmDuel() {
+            return {
+                tmdbBase: 'https://image.tmdb.org/t/p/w500',
+                mode: 'duel', // duel, building, results
+                comparisons: 0,
+                maxRounds: 10,
+                selected: null,
+                
+                // Authentische IMDb Top 100 (Auswahl)
+                allFilms: [
+                    { id: 1, title: 'The Shawshank Redemption', poster: '/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', year: '1994', director: 'Frank Darabont' },
+                    { id: 2, title: 'The Godfather', poster: '/3bhkrj58Vtu7enYsRolD1fZdja1.jpg', year: '1972', director: 'Francis Ford Coppola' },
+                    { id: 3, title: 'The Dark Knight', poster: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg', year: '2008', director: 'Christopher Nolan' },
+                    { id: 4, title: 'The Godfather Part II', poster: '/amvmeQWheahG3StKwie1f9YNVL.jpg', year: '1974', director: 'Francis Ford Coppola' },
+                    { id: 5, title: '12 Angry Men', poster: '/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg', year: '1957', director: 'Sidney Lumet' },
+                    { id: 6, title: 'The Lord of the Rings: The Return of the King', poster: '/rCzpDGLbOoPwLjy3OAm5NUPOiCj.jpg', year: '2003', director: 'Peter Jackson' },
+                    { id: 7, title: 'Schindler\'s List', poster: '/sF1URmfVUq7nS9bG9l5v7Yv9E8.jpg', year: '1993', director: 'Steven Spielberg' },
+                    { id: 8, title: 'Pulp Fiction', poster: '/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg', year: '1994', director: 'Quentin Tarantino' },
+                    { id: 9, title: 'The Lord of the Rings: The Fellowship of the Ring', poster: '/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg', year: '2001', director: 'Peter Jackson' },
+                    { id: 10, title: 'The Good, the Bad and the Ugly', poster: '/bX2xnavhMYjWDoZp1VM6VnU1xwe.jpg', year: '1966', director: 'Sergio Leone' },
+                    { id: 11, title: 'Forrest Gump', poster: '/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg', year: '1994', director: 'Robert Zemeckis' },
+                    { id: 12, title: 'The Lord of the Rings: The Two Towers', poster: '/5VTN0pR8gcqV3EPUHHfMGnJYN9L.jpg', year: '2002', director: 'Peter Jackson' },
+                    { id: 13, title: 'Fight Club', poster: '/pB8BM7pdSp6B6Ih7QZ4DrQ3PmZ5.jpg', year: '1999', director: 'David Fincher' },
+                    { id: 14, title: 'Inception', poster: '/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg', year: '2010', director: 'Christopher Nolan' },
+                    { id: 15, title: 'Star Wars: Episode V - The Empire Strikes Back', poster: '/2l05cFWJacyIsTpsqSgHzBRrprG.jpg', year: '1980', director: 'Irvin Kershner' },
+                    { id: 16, title: 'The Matrix', poster: '/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg', year: '1999', director: 'The Wachowskis' },
+                    { id: 17, title: 'Goodfellas', poster: '/aKuFiU82s5ISJpGM9rRa9PJj3ji.jpg', year: '1990', director: 'Martin Scorsese' },
+                    { id: 18, title: 'One Flew Over the Cuckoo\'s Nest', poster: '/2Sns5oMb356JNdBHgBETjIpRYy9.jpg', year: '1975', director: 'Miloš Forman' },
+                    { id: 19, title: 'Se7en', poster: '/6y8wg7a7P4D5z3u5m5v5n5v5n5.jpg', year: '1995', director: 'David Fincher' },
+                    { id: 20, title: 'Seven Samurai', poster: '/8y8wg7a7P4D5z3u5m5v5n5v5n5.jpg', year: '1954', director: 'Akira Kurosawa' },
+                    { id: 21, title: 'It\'s a Wonderful Life', poster: '/8f9d8f9d8f9d8f9d8f9d8f9d8f.jpg', year: '1946', director: 'Frank Capra' },
+                    { id: 22, title: 'The Silence of the Lambs', poster: '/rplLJ2h5N5N5N5N5N5N5N5N5.jpg', year: '1991', director: 'Jonathan Demme' },
+                    { id: 23, title: 'City of God', poster: '/g5g5g5g5g5g5g5g5g5g5g5g5g.jpg', year: '2002', director: 'Fernando Meirelles' },
+                    { id: 24, title: 'Saving Private Ryan', poster: '/uY9k8t2F59l5m5m5m5m5m5m5m.jpg', year: '1998', director: 'Steven Spielberg' },
+                    { id: 25, title: 'Interstellar', poster: '/gEU2QniL6E86tC9z1PaVwpf77R1.jpg', year: '2014', director: 'Christopher Nolan' },
+                    { id: 26, title: 'Life Is Beautiful', poster: '/5z5z5z5z5z5z5z5z5z5z5z5z.jpg', year: '1997', director: 'Roberto Benigni' },
+                    { id: 27, title: 'The Green Mile', poster: '/velWPhVMQeQKcxggNEU8YmIo52R.jpg', year: '1999', director: 'Frank Darabont' },
+                    { id: 28, title: 'Star Wars: Episode IV - A New Hope', poster: '/6xfj47mP0P1pQg6k5H5X3L7X6.jpg', year: '1977', director: 'George Lucas' },
+                    { id: 29, title: 'Terminator 2: Judgment Day', poster: '/weVXMD5QBGeQil4HEATZqAkXeEc.jpg', year: '1991', director: 'James Cameron' },
+                    { id: 30, title: 'Back to the Future', poster: '/7lyBcpYB0Qt8gYhXYaEZUNlA3Vz.jpg', year: '1985', director: 'Robert Zemeckis' },
+                    { id: 31, title: 'Spirited Away', poster: '/39wmItIWsg5sZMyRUKGk251ytnZ.jpg', year: '2001', director: 'Hayao Miyazaki' },
+                    { id: 32, title: 'The Pianist', poster: '/5z5z5z5z5z5z5z5z5z5z5z5z.jpg', year: '2002', director: 'Roman Polanski' },
+                    { id: 33, title: 'Psycho', poster: '/5z5z5z5z5z5z5z5z5z5z5z5z.jpg', year: '1960', director: 'Alfred Hitchcock' },
+                    { id: 34, title: 'Parasite', poster: '/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', year: '2019', director: 'Bong Joon Ho' },
+                    { id: 35, title: 'Léon: The Professional', poster: '/y5y5y5y5y5y5y5y5y5y5y5y5.jpg', year: '1994', director: 'Luc Besson' },
+                    { id: 36, title: 'The Lion King', poster: '/b0MxU37dNmMwK7E5Z6C0tI9E9.jpg', year: '1994', director: 'Roger Allers' },
+                    { id: 37, title: 'Gladiator', poster: '/ty8TscduvD8HjbsBUU7ypDttwz.jpg', year: '2000', director: 'Ridley Scott' },
+                    { id: 38, title: 'American History X', poster: '/c2gsmSQ2CqvK9m5q4y5y5y5y5.jpg', year: '1998', director: 'Tony Kaye' },
+                    { id: 39, title: 'The Departed', poster: '/nT97ifVT2J1L6hZ5b2Y5M5Y5.jpg', year: '2006', director: 'Martin Scorsese' },
+                    { id: 40, title: 'The Usual Suspects', poster: '/jgJoRWltoS4nn5N5N5N5N5N5.jpg', year: '1995', director: 'Bryan Singer' },
+                    { id: 41, title: 'The Prestige', poster: '/5M7aD3X3H71R3ET5qZ3L5Z5Z5.jpg', year: '2006', director: 'Christopher Nolan' },
+                    { id: 42, title: 'Whiplash', poster: '/lIv1QinR7jr4HKj8B4m8Q5X5.jpg', year: '2014', director: 'Damien Chazelle' },
+                    { id: 43, title: 'Casablanca', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1942', director: 'Michael Curtiz' },
+                    { id: 44, title: 'Once Upon a Time in the West', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1968', director: 'Sergio Leone' },
+                    { id: 45, title: 'Rear Window', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1954', director: 'Alfred Hitchcock' },
+                    { id: 46, title: 'Alien', poster: '/vfrQk5IPloGg1v9Rzbh21Eg3HjF.jpg', year: '1979', director: 'Ridley Scott' },
+                    { id: 47, title: 'City Lights', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1931', director: 'Charlie Chaplin' },
+                    { id: 48, title: 'Modern Times', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1936', director: 'Charlie Chaplin' },
+                    { id: 49, title: 'Coco', poster: '/gGEsBPAijhV3oiZdynm8Pzx5N7K.jpg', year: '2017', director: 'Lee Unkrich' },
+                    { id: 50, title: 'Avengers: Infinity War', poster: '/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg', year: '2018', director: 'Russo Brothers' },
+                    { id: 51, title: 'Django Unchained', poster: '/5o3n3n3n3n3n3n3n3n3n3n3n.jpg', year: '2012', director: 'Quentin Tarantino' },
+                    { id: 52, title: 'WALL·E', poster: '/9il7qNbeYnPMYlutfG5Vq6G5E.jpg', year: '2008', director: 'Andrew Stanton' },
+                    { id: 53, title: 'The Lives of Others', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2006', director: 'Florian Henckel von Donnersmarck' },
+                    { id: 54, title: 'Sunset Boulevard', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1950', director: 'Billy Wilder' },
+                    { id: 55, title: 'The Shining', poster: '/9i3pN64pxTzRO2Uy2AhJ1pxDQBz.jpg', year: '1980', director: 'Stanley Kubrick' },
+                    { id: 56, title: 'Paths of Glory', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1957', director: 'Stanley Kubrick' },
+                    { id: 57, title: 'Spider-Man: Into the Spider-Verse', poster: '/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg', year: '2018', director: 'Bob Persichetti' },
+                    { id: 58, title: 'A Clockwork Orange', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1971', director: 'Stanley Kubrick' },
+                    { id: 59, title: 'Taxi Driver', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1976', director: 'Martin Scorsese' },
+                    { id: 60, title: 'Inglourious Basterds', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2009', director: 'Quentin Tarantino' },
+                    { id: 61, title: 'Toy Story', poster: '/rhIRbceoE9lR4veEXuwCC2wARtH.jpg', year: '1995', director: 'John Lasseter' },
+                    { id: 62, title: 'Amadeus', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1984', director: 'Miloš Forman' },
+                    { id: 63, title: 'Cinema Paradiso', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1988', director: 'Giuseppe Tornatore' },
+                    { id: 64, title: 'Reservoir Dogs', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1992', director: 'Quentin Tarantino' },
+                    { id: 65, title: 'Die Hard', poster: '/yFihWxQcmqcaBRrRM4NhnGzD0.jpg', year: '1988', director: 'John McTiernan' },
+                    { id: 66, title: 'Indiana Jones: Raiders of the Lost Ark', poster: '/44sKf3x5n5v5n5v5n5v5n5v5n.jpg', year: '1981', director: 'Steven Spielberg' },
+                    { id: 67, title: 'A Beautiful Mind', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2001', director: 'Ron Howard' },
+                    { id: 68, title: 'Bicycle Thieves', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1948', director: 'Vittorio De Sica' },
+                    { id: 69, title: 'The Wolf of Wall Street', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2013', director: 'Martin Scorsese' },
+                    { id: 70, title: 'Pan\'s Labyrinth', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2006', director: 'Guillermo del Toro' },
+                    { id: 71, title: 'Vertigo', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1958', director: 'Alfred Hitchcock' },
+                    { id: 72, title: 'Some Like It Hot', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1959', director: 'Billy Wilder' },
+                    { id: 73, title: 'Requiem for a Dream', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2000', director: 'Darren Aronofsky' },
+                    { id: 74, title: 'Dune: Part One', poster: '/d5NXSklXo0qyIYkgV94XAgMIckC.jpg', year: '2021', director: 'Denis Villeneuve' },
+                    { id: 75, title: 'Eternal Sunshine of the Spotless Mind', poster: '/5MwkWH9tYHv3mV9OdYTMR5qreIz.jpg', year: '2004', director: 'Michel Gondry' },
+                    { id: 76, title: '2001: A Space Odyssey', poster: '/90T7b2LIrL07ndYQZSmLvN5Z8x.jpg', year: '1968', director: 'Stanley Kubrick' },
+                    { id: 77, title: 'Full Metal Jacket', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1987', director: 'Stanley Kubrick' },
+                    { id: 78, title: 'Toy Story 3', poster: '/6bD9x5z5z5z5z5z5z5z5z5z5.jpg', year: '2010', director: 'Lee Unkrich' },
+                    { id: 79, title: 'Joker', poster: '/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg', year: '2019', director: 'Todd Phillips' },
+                    { id: 80, title: 'Oldboy', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2003', director: 'Park Chan-wook' },
+                    { id: 81, title: 'Monty Python and the Holy Grail', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1975', director: 'Terry Gilliam' },
+                    { id: 82, title: 'The Apartment', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1960', director: 'Billy Wilder' },
+                    { id: 83, title: 'Metropolis', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1927', director: 'Fritz Lang' },
+                    { id: 84, title: 'Downfall', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2004', director: 'Oliver Hirschbiegel' },
+                    { id: 85, title: 'Mad Max: Fury Road', poster: '/8tZYtuWezp8JbcsvHYO0O46tFbo.jpg', year: '2015', director: 'George Miller' },
+                    { id: 86, title: 'Princess Mononoke', poster: '/6E8iP1z5z5z5z5z5z5z5z5z5.jpg', year: '1997', director: 'Hayao Miyazaki' },
+                    { id: 87, title: 'Howl\'s Moving Castle', poster: '/TkTPEm4nz8z9r5Z5z5z5z5z5.jpg', year: '2004', director: 'Hayao Miyazaki' },
+                    { id: 88, title: 'My Neighbor Totoro', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1988', director: 'Hayao Miyazaki' },
+                    { id: 89, title: 'The Grand Budapest Hotel', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2014', director: 'Wes Anderson' },
+                    { id: 90, title: 'Ratatouille', poster: '/5z5z5z5z5z5z5z5z5z5z5z5z.jpg', year: '2007', director: 'Brad Bird' },
+                    { id: 91, title: 'Groundhog Day', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1993', director: 'Harold Ramis' },
+                    { id: 92, title: 'The Truman Show', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1998', director: 'Peter Weir' },
+                    { id: 93, title: 'Blade Runner', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1982', director: 'Ridley Scott' },
+                    { id: 94, title: 'Blade Runner 2049', poster: '/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg', year: '2017', director: 'Denis Villeneuve' },
+                    { id: 95, title: 'The Thing', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1982', director: 'John Carpenter' },
+                    { id: 96, title: 'John Wick', poster: '/fZPSdJ8nS6zQ1Z9m8j5vQ0V5b7t.jpg', year: '2014', director: 'Chad Stahelski' },
+                    { id: 97, title: 'Kill Bill: Vol. 1', poster: '/v7TaX8kXMXs5yFFGR41gu0vky4.jpg', year: '2003', director: 'Quentin Tarantino' },
+                    { id: 98, title: 'Logan', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2017', director: 'James Mangold' },
+                    { id: 99, title: 'Ford v Ferrari', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '2019', director: 'James Mangold' },
+                    { id: 100, title: 'The Big Lebowski', poster: '/5n5v5n5v5n5v5n5v5n5v5n5v.jpg', year: '1998', director: 'Coen Brothers' }
+                ],
+                
+                films: [],
+                currentPair: [],
+                rankings: [],
+                filmStats: {},
+                usedPairs: new Set(),
+                
+                init() {
+                    this.films = [...this.allFilms];
+                    this.resetSession();
+                    this.generatePair();
+                },
+                
+                resetSession() {
+                    this.comparisons = 0;
+                    this.usedPairs.clear();
+                    this.filmStats = {};
+                    this.films.forEach(f => {
+                        this.filmStats[f.id] = { wins: 0, losses: 0, score: 1000 };
+                    });
+                },
+                
+                generatePair() {
+                    // Get two random films from pool
+                    const shuffled = [...this.films].sort(() => 0.5 - Math.random());
+                    let filmA = shuffled[0];
+                    let filmB = shuffled[1];
+                    
+                    // Ensure not same pair as before
+                    const pairKey = [filmA.id, filmB.id].sort().join('-');
+                    if (this.usedPairs.has(pairKey)) {
+                        // Try to find different pair
+                        for (let i = 2; i < shuffled.length; i++) {
+                            const newKey = [filmA.id, shuffled[i].id].sort().join('-');
+                            if (!this.usedPairs.has(newKey)) {
+                                filmB = shuffled[i];
+                                break;
+                            }
+                        }
+                    }
+                    
+                    this.currentPair = [filmA, filmB];
+                    this.usedPairs.add([filmA.id, filmB.id].sort().join('-'));
+                },
+                
+                chooseFilm(winner) {
+                    this.selected = winner === this.currentPair[0] ? 'A' : 'B';
+                    const loser = this.currentPair.find(f => f.id !== winner.id);
+                    
+                    // Update stats
+                    this.filmStats[winner.id].wins++;
+                    this.filmStats[loser.id].losses++;
+                    
+                    // ELO scoring
+                    const expectedA = 1 / (1 + Math.pow(10, (this.filmStats[loser.id].score - this.filmStats[winner.id].score) / 400));
+                    const k = 32;
+                    this.filmStats[winner.id].score += k * (1 - expectedA);
+                    this.filmStats[loser.id].score -= k * (1 - expectedA);
+                    
+                    this.comparisons++;
+                    
+                    // Wait then next
+                    setTimeout(() => {
+                        this.selected = null;
+                        if (this.comparisons >= this.maxRounds) {
+                            this.mode = 'building';
+                            setTimeout(() => {
+                                this.calculateRankings();
+                                this.mode = 'results';
+                            }, 1500);
+                        } else {
+                            this.generatePair();
+                        }
+                    }, 500);
+                },
+                
+                skipPair() {
+                    this.comparisons++;
+                    if (this.comparisons >= this.maxRounds) {
+                        this.mode = 'building';
+                        setTimeout(() => {
+                            this.calculateRankings();
+                            this.mode = 'results';
+                        }, 1500);
+                    } else {
+                        this.generatePair();
+                    }
+                },
+                
+                calculateRankings() {
+                    this.rankings = Object.entries(this.filmStats)
+                        .map(([id, stats]) => {
+                            const film = this.allFilms.find(f => f.id === parseInt(id));
+                            return { ...film, ...stats };
+                        })
+                        .filter(f => f.wins > 0 || f.losses > 0) // Only films that were compared
+                        .sort((a, b) => b.score - a.score);
+                },
+                
+                shareResults() {
+                    const winner = this.rankings[0]?.title || 'Unbekannt';
+                    const text = `Mein IMDb Top 100 Sieger nach 10 Duelle: ${winner}`;
+                    
+                    if (navigator.share) {
+                        navigator.share({ title: 'Meine IMDb Top 100', text });
+                    } else {
+                        navigator.clipboard.writeText(text);
+                        alert('Kopiert!');
+                    }
+                },
+                
+                restart() {
+                    this.mode = 'duel';
+                    this.resetSession();
+                    this.generatePair();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
