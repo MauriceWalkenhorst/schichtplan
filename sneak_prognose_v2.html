@@ -3,172 +3,633 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sneak Prognose | Zenima Style</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title>Sneak Prognose & Review</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Graphik:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; margin: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        .hero-section {
-            height: 60vh;
-            background-image: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(15,23,42,1) 100%), url('https://images.alphacoders.com/134/1341101.png');
-            background-size: cover;
-            background-position: center;
+        :root {
+            --bg-primary: #14181c;
+            --bg-secondary: #1c2228;
+            --bg-card: #242c34;
+            --text-primary: #fff;
+            --text-secondary: #9ab;
+            --text-muted: #678;
+            --accent-green: #00e054;
+            --accent-orange: #ff8000;
+            --border-color: #2c3440;
+            --overlay-bg: rgba(0,0,0,0.85);
+        }
+        
+        body {
+            font-family: 'Graphik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .app-header {
             display: flex;
-            align-items: flex-end;
-            padding: 4rem 2rem;
-            color: white;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .logo {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            font-size: 24px;
+            text-transform: uppercase;
         }
 
-        .nav-glass {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
+        .logo span { color: var(--accent-green); }
+        
+        .cinema-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: right;
         }
 
-        .poster-card {
-            aspect-ratio: 2/3;
-            background-size: cover;
-            background-position: center;
+        /* Layout Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 40px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Section Styles */
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        
+        /* HERO (Last Sneak) */
+        .hero-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 700px) {
+            .hero-card {
+                grid-template-columns: 1fr;
+            }
+            .hero-poster-container {
+                height: 400px;
+            }
+        }
+
+        .hero-poster-container {
+            position: relative;
+            background: #000;
+        }
+
+        .hero-poster {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--accent-green);
+            color: #000;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 8px;
             border-radius: 4px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
+            align-self: flex-start;
+            margin-bottom: 15px;
         }
-        .poster-card:hover { transform: scale(1.05); }
 
-        .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; }
+        .hero-title {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 10px;
+        }
+
+        .hero-meta {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Review/Rating Section in Hero */
+        .user-review-section {
+            margin-top: auto;
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .star-icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            fill: var(--bg-card);
+            stroke: var(--text-secondary);
+            stroke-width: 1.5px;
+            transition: all 0.2s;
+        }
+
+        .star-icon:hover, .star-icon.active {
+            fill: var(--accent-green);
+            stroke: var(--accent-green);
+        }
+
+        .comment-area {
+            width: 100%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            min-height: 60px;
+            font-family: inherit;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .action-btn {
+            background: var(--text-secondary);
+            color: var(--bg-primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-top: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+        }
+        
+        .action-btn:hover { background: #fff; }
+
+        /* SIDEBAR (Next Prediction) */
+        .sidebar-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .prediction-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .prediction-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .prediction-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .probability-bar {
+            height: 4px;
+            background: var(--bg-card);
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            background: var(--accent-orange);
+            width: 85%; /* Static for now */
+        }
+        
+        .prob-text {
+            font-size: 11px;
+            color: var(--accent-orange);
+            margin-top: 5px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* History (Grid) */
+        .history-section {
+            margin-top: 60px;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .history-item {
+            text-align: center;
+        }
+
+        .history-item img {
+            width: 100%;
+            border-radius: 4px;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            margin-bottom: 8px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .history-item:hover img {
+            opacity: 1;
+        }
+
+        .history-item h4 {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Footer & Admin */
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .admin-trigger {
+            color: var(--bg-card);
+            cursor: default;
+        }
+        .admin-trigger:hover { color: var(--text-muted); cursor: pointer; }
+
+        /* Admin Modal */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--overlay-bg);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .admin-panel {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            border: 1px solid var(--border-color);
+        }
+
+        .admin-panel h2 { margin-bottom: 20px; font-size: 18px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-secondary); margin-bottom: 5px; }
+        .form-group input { 
+            width: 100%; padding: 8px; background: var(--bg-primary); 
+            border: 1px solid var(--border-color); color: #fff; border-radius: 4px;\
+        }
+
+        .modal-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }\
+        .btn-cancel { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); }
+        .btn-save { background: var(--accent-green); border: none; color: #000; }
+        .btn { padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
+
     </style>
 </head>
-<body x-data="sneakApp()" x-init="init()">
+<body>
 
-    <!-- Navbar (Zenima Style) -->
-    <nav class="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-center text-white bg-gradient-to-b from-black/50 to-transparent">
-        <div class="text-xl font-black tracking-tighter uppercase">ZENIMA <span class="text-slate-400 font-light">PROGNOSE</span></div>
-        <div class="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest opacity-80">
-            <a href="#" class="hover:opacity-100">Filme</a>
-            <a href="#" class="hover:opacity-100">Archiv</a>
-            <a href="#" class="hover:opacity-100">Community</a>
-        </div>
-        <div class="flex items-center gap-4">
-            <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <div class="w-8 h-8 rounded-full bg-slate-700 border border-white/20 overflow-hidden">
-                <img src="https://mauricewalkenhorst.github.io/Walter_Projekte/walter_mitty.png" class="w-full h-full object-cover">
-            </div>
-        </div>
-    </nav>
+    <div class="container">
+        <header class="app-header">
+            <div class="logo">Sneak<span>Prognose</span></div>
+            <div class="cinema-info">UCI Ruhr Park<br>Sneak Preview</div>
+        </header>
 
-    <!-- Hero Area -->
-    <header class="hero-section relative">
-        <div class="max-w-6xl mx-auto w-full">
-            <div class="mb-2 text-xs font-black uppercase tracking-[0.3em] text-blue-400">Sneak Favorit KW 06</div>
-            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 italic">Cold Storage</h1>
-            <div class="flex items-center gap-6 text-sm font-medium opacity-80">
-                <span>2026</span>
-                <span>•</span>
-                <span>Thriller / Sci-Fi</span>
-                <span>•</span>
-                <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold">PROGNOSE: 92%</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- Quick Selection Grid -->
-    <div class="bg-slate-900 pb-20 px-6 -mt-1">
-        <div class="max-w-6xl mx-auto">
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-                <template x-for="movie in movies" :key="movie.title">
-                    <div class="space-y-3 group cursor-pointer">
-                        <div class="poster-card" :style="'background-image: url(' + movie.poster + ')'"></div>
-                        <div class="text-[11px] font-bold text-white uppercase tracking-wider group-hover:text-blue-400 transition-colors" x-text="movie.title"></div>
+        <div class="main-grid">
+            
+            <!-- HERO: Last Sneak (Review Focus) -->
+            <div class="hero-section">
+                <div class="section-title">Zuletzt in der Sneak</div>
+                <div class="hero-card">
+                    <div class="hero-poster-container">
+                        <img id="heroPoster" src="" alt="Movie Poster" class="hero-poster">
                     </div>
-                </template>
-            </div>
-        </div>
-    </div>
-
-    <!-- Details Section (White/Grey) -->
-    <main class="max-w-6xl mx-auto py-20 px-6">
-        <div class="flex gap-12 mb-10 text-xs font-black uppercase tracking-widest border-b border-slate-200">
-            <button class="pb-4 tab-active">Top Prognosen</button>
-            <button class="pb-4 text-slate-400 hover:text-slate-600">Archiv</button>
-            <button class="pb-4 text-slate-400 hover:text-slate-600">UCI Community</button>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            <!-- Left Info -->
-            <div class="lg:col-span-8 space-y-12">
-                <section>
-                    <h3 class="text-2xl font-black mb-6 italic">Warum dieser Film?</h3>
-                    <p class="text-slate-500 leading-relaxed max-w-2xl">
-                        Basierend auf den aktuellen Meldungen von sneak-kino.de und den UCI Test-Screenings ist "Cold Storage" der heißeste Kandidat. Das Release-Datum passt perfekt zum Sneak-Fenster im Ruhr Park.
-                    </p>
-                </section>
-
-                <section>
-                    <h3 class="text-2xl font-black mb-6 italic">Deine Bewertung</h3>
-                    <div class="flex gap-4">
-                        <template x-for="i in 5">
-                            <button @click="rating = i" class="text-slate-300 hover:scale-110 transition-transform">
-                                <svg class="w-10 h-10" :class="rating >= i ? 'text-amber-400 fill-current' : 'fill-none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                            </button>
-                        </template>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="lg:col-span-4 bg-slate-100 rounded-3xl p-8 h-fit">
-                <h4 class="text-xs font-black uppercase tracking-widest mb-6">Letzte Sneaks</h4>
-                <div class="space-y-6">
-                    <div class="flex gap-4">
-                        <div class="w-12 h-16 bg-slate-300 rounded overflow-hidden">
-                             <img src="https://www.themoviedb.org/t/p/w200/q6K1T4mG3Y8D2e3XzV3F9r4F5L6.jpg" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <div class="text-sm font-bold">Primate</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">Januar 2026</div>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="w-12 h-16 bg-slate-300 rounded overflow-hidden">
-                             <img src="https://www.themoviedb.org/t/p/w200/vRstO6X8S80p0C66Yv94vL8AJSW.jpg" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <div class="text-sm font-bold">Send Help</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">Januar 2026</div>
+                    <div class="hero-content">
+                        <div class="hero-label">Sneak Review</div>
+                        <h1 id="heroTitle" class="hero-title">Loading...</h1>
+                        <div id="heroMeta" class="hero-meta">Loading...</div>
+                        
+                        <div class="user-review-section">
+                            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px;">Deine Bewertung</div>
+                            <div class="rating-stars" id="heroStars">
+                                <!-- Stars via JS -->
+                            </div>
+                            <textarea id="heroComment" class="comment-area" placeholder="Kurzes Fazit..."></textarea>
+                            <button onclick="saveReview()" class="action-btn">Speichern</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
 
-    <footer class="bg-white py-12 px-6 border-t border-slate-200">
-        <div class="max-w-6xl mx-auto flex justify-between items-center text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-            <span>Zenima Cinema Core 2026</span>
-            <div class="flex gap-8">
-                <a href="index.html" class="hover:text-black transition-colors">OS Launcher</a>
-                <a href="#" class="hover:text-black transition-colors">Privacy</a>
+            <!-- SIDEBAR: Next Prediction -->
+            <div class="sidebar">
+                <div class="section-title">Nächste Woche (Prognose)</div>
+                <div class="sidebar-card">
+                    <img id="predPoster" src="" alt="Prediction" class="prediction-poster">
+                    <h3 id="predTitle" class="prediction-title">Loading...</h3>
+                    <div id="predMeta" class="prediction-meta">Loading...</div>
+                    <div class="probability-bar"><div class="probability-fill"></div></div>
+                    <div class="prob-text">85% Wahrscheinlichkeit</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- HISTORY (Cleaned up) -->
+        <div class="history-section">
+            <div class="section-title">Historie (Echte Sneaks)</div>
+            <div id="historyList" class="history-list">
+                <!-- JS populates this -->
+            </div>
+            <div id="emptyHistoryMsg" style="color: var(--text-muted); font-size: 13px; font-style: italic; display: none;">
+                Noch keine weiteren Einträge.
             </div>
         </div>
-    </footer>
 
-    <script>
-        function sneakApp() {
-            return {
-                rating: 0,
-                movies: [
-                    { title: 'Cold Storage', poster: 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/vRstO6X8S80p0C66Yv94vL8AJSW.jpg' },
-                    { title: 'No Other Choice', poster: 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/q6K1T4mG3Y8D2e3XzV3F9r4F5L6.jpg' },
-                    { title: 'Dead of Winter', poster: 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/7W9Y5vRsh8D6yHwK0K9yBv7p6u4.jpg' },
-                    { title: 'Return to Silent Hill', poster: 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/pB9Ja7vC5S1f3Z3yK6X8lYFzX5z.jpg' },
-                    { title: 'Shutter Island', poster: 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/469Y96SszT6pC6vRish65YhQ3rY.jpg' }
-                ],
-                init() {
-                    console.log('Zenima Interface initialized.');
-                }
-            }
-        }
-    </script>
-</body>
+        <footer>
+            <div onclick="openAdmin()" class="admin-trigger">Administration</div>
+            <div style="margin-top: 10px;">&copy; 2026 Sneak Community</div>
+        </footer>
+
+    </div>
+
+    <!-- ADMIN MODAL -->
+    <div id="adminModal" class="admin-modal">
+        <div class="admin-panel" id="loginPanel">
+            <h2>Admin Access</h2>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="adminPass">
+            </div>
+            <div class="modal-btns">
+                <button onclick="closeAdmin()" class="btn btn-cancel">Cancel</button>
+                <button onclick="checkLogin()" class="btn btn-save">Login</button>
+            </div>
+        </div>
+
+        <div class=\"admin-panel\" id=\"editPanel\" style=\"display: none;\">\
+            <h2>Sneak bearbeiten</h2>\
+            \
+            <div style=\"margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;\">\
+                <h3 style=\"font-size: 14px; color: var(--accent-green); margin-bottom: 10px;\">1. Letzter Film (Review)</h3>\
+                <div class=\"form-group\">\
+                    <label>Titel</label>\
+                    <input type=\"text\" id=\"editHeroTitle\">\
+                </div>\
+                <div class=\"form-group\">\
+                    <label>Poster URL (TMDB path)</label>\
+                    <input type=\"text\" id=\"editHeroPoster\">\
+                </div>\
+                <div class=\"form-group\">\
+                    <label>Meta (Jahr, Genre)</label>\
+                    <input type=\"text\" id=\"editHeroMeta\">\
+                </div>\
+            </div>\
+\
+            <div style=\"margin-bottom: 20px;\">\
+                <h3 style=\"font-size: 14px; color: var(--accent-orange); margin-bottom: 10px;\">2. Nächste Prognose</h3>\
+                <div class=\"form-group\">\
+                    <label>Titel</label>\
+                    <input type=\"text\" id=\"editPredTitle\">\
+                </div>\
+                <div class=\"form-group\">\
+                    <label>Poster URL (TMDB path)</label>\
+                    <input type=\"text\" id=\"editPredPoster\">\
+                </div>\
+            </div>\
+\
+            <div class=\"modal-btns\">\
+                <button onclick=\"closeAdmin()\" class=\"btn btn-cancel\">Close</button>\
+                <button onclick=\"saveAdminChanges()\" class=\"btn btn-save\">Save Changes</button>\
+            </div>\
+        </div>\
+    </div>\
+\
+    <script>\
+        // CONFIG & DATA\
+        const TMDB_BASE = 'https://image.tmdb.org/t/p/w500';\
+        \
+        // Default Data (Fallback)\
+        const DEFAULT_DATA = {\
+            hero: {\
+                title: 'No Other Choice',\
+                poster: '/tImzXp37Q2RBcIdYS1HRdtffEaD.jpg',\
+                meta: '2026 · Thriller · Action',\
+                id: 'sneak_kw06_26'\
+            },\
+            prediction: {\
+                title: 'Cold Storage',\
+                poster: '/wPBjoPOLlbr2BvZFmUUWYdwmF4o.jpg',\
+                meta: '2026 · Horror · Sci-Fi',\
+                id: 'sneak_kw07_26'\
+            },\
+            history: [] // Clean slate as requested\
+        };\
+\
+        // Load State\
+        let appData = JSON.parse(localStorage.getItem('sneak_data')) || DEFAULT_DATA;\
+        let userRatings = JSON.parse(localStorage.getItem('sneak_user_ratings')) || {};\
+\
+        // DOM Elements\
+        const els = {\
+            heroTitle: document.getElementById('heroTitle'),\
+            heroPoster: document.getElementById('heroPoster'),\
+            heroMeta: document.getElementById('heroMeta'),\
+            heroStars: document.getElementById('heroStars'),\
+            heroComment: document.getElementById('heroComment'),\
+            predTitle: document.getElementById('predTitle'),\
+            predPoster: document.getElementById('predPoster'),\
+            predMeta: document.getElementById('predMeta'),\
+            historyList: document.getElementById('historyList'),\
+            adminModal: document.getElementById('adminModal'),\
+            loginPanel: document.getElementById('loginPanel'),\
+            editPanel: document.getElementById('editPanel')\
+        };\
+\
+        // INIT\
+        function init() {\
+            renderHero();\
+            renderPrediction();\
+            renderHistory();\
+        }\
+\
+        // RENDER FUNCTIONS\
+        function renderHero() {\
+            els.heroTitle.innerText = appData.hero.title;\
+            els.heroMeta.innerText = appData.hero.meta;\
+            els.heroPoster.src = TMDB_BASE + appData.hero.poster;\
+            \
+            // Render Stars for Hero\
+            const currentRating = userRatings[appData.hero.id]?.rating || 0;\
+            const currentComment = userRatings[appData.hero.id]?.comment || '';\
+            \
+            els.heroComment.value = currentComment;\
+            els.heroStars.innerHTML = '';\
+            \
+            for(let i=1; i<=5; i++) {\
+                const svg = document.createElementNS(\"http://www.w3.org/2000/svg\", \"svg\");\
+                svg.setAttribute(\"class\", `star-icon ${i <= currentRating ? 'active' : ''}`);\
+                svg.setAttribute(\"viewBox\", \"0 0 24 24\");\
+                svg.onclick = () => setRating(i);\
+                svg.innerHTML = '<path d=\"M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\"/>';\
+                els.heroStars.appendChild(svg);\
+            }\
+        }\
+\
+        function renderPrediction() {\
+            els.predTitle.innerText = appData.prediction.title;\
+            els.predMeta.innerText = appData.prediction.meta || 'Demnächst';\
+            els.predPoster.src = TMDB_BASE + appData.prediction.poster;\
+        }\
+\
+        function renderHistory() {\
+            els.historyList.innerHTML = '';\
+            if(!appData.history || appData.history.length === 0) {\
+                document.getElementById('emptyHistoryMsg').style.display = 'block';\
+                return;\
+            }\
+            \
+            document.getElementById('emptyHistoryMsg').style.display = 'none';\
+            appData.history.forEach(film => {\
+                const div = document.createElement('div');\
+                div.className = 'history-item';\
+                div.innerHTML = `\n                    <img src=\"${TMDB_BASE + film.poster}\">\n                    <h4>${film.title}</h4>\n                `;\
+                els.historyList.appendChild(div);\
+            });\
+        }\
+\
+        // ACTIONS\
+        function setRating(r) {\
+            if(!userRatings[appData.hero.id]) userRatings[appData.hero.id] = {};\
+            userRatings[appData.hero.id].rating = r;\
+            saveUserRatings();\
+            renderHero(); // Re-render stars\
+        }\
+\
+        function saveReview() {\
+            if(!userRatings[appData.hero.id]) userRatings[appData.hero.id] = {};\
+            userRatings[appData.hero.id].comment = els.heroComment.value;\
+            saveUserRatings();\
+            alert('Review gespeichert!');\
+        }\
+\
+        function saveUserRatings() {\
+            localStorage.setItem('sneak_user_ratings', JSON.stringify(userRatings));\
+        }\
+\
+        // ADMIN FUNCTIONS\
+        function openAdmin() {\
+            els.adminModal.style.display = 'flex';\
+            els.loginPanel.style.display = 'block';\
+            els.editPanel.style.display = 'none';\
+            document.getElementById('adminPass').value = '';\
+        }\
+\
+        function closeAdmin() {\
+            els.adminModal.style.display = 'none';\
+        }\
+\
+        function checkLogin() {\
+            const pw = document.getElementById('adminPass').value;\
+            if(pw === 'Lesterw45') {\
+                els.loginPanel.style.display = 'none';\
+                els.editPanel.style.display = 'block';\
+                loadAdminValues();\
+            } else {\
+                alert('Access Denied');\
+            }\
+        }\
+\
+        function loadAdminValues() {\
+            document.getElementById('editHeroTitle').value = appData.hero.title;\
+            document.getElementById('editHeroPoster').value = appData.hero.poster;\
+            document.getElementById('editHeroMeta').value = appData.hero.meta;\
+            \
+            document.getElementById('editPredTitle').value = appData.prediction.title;\
+            document.getElementById('editPredPoster').value = appData.prediction.poster;\
+        }\
+\
+        function saveAdminChanges() {\
+            // Push old hero to history if title changed (simple logic for now)\
+            // For now, we just edit in place as requested by \"bearbeiten\"\
+            \
+            appData.hero.title = document.getElementById('editHeroTitle').value;\
+            appData.hero.poster = document.getElementById('editHeroPoster').value;\
+            appData.hero.meta = document.getElementById('editHeroMeta').value;\
+            \
+            appData.prediction.title = document.getElementById('editPredTitle').value;\
+            appData.prediction.poster = document.getElementById('editPredPoster').value;\
+            \
+            localStorage.setItem('sneak_data', JSON.stringify(appData));\
+            init();\
+            closeAdmin();\
+            alert('Daten aktualisiert');\
+        }\
+\
+        // Boot\
+        init();\
+\
+    </script>\
+</body>\
 </html>
