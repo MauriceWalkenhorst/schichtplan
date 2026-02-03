@@ -269,7 +269,48 @@
             </p>
             
             <div class="text-center mt-6">
-                <a href="impressum.html" class="text-xs text-slate-700 hover:text-slate-500 transition-colors">Impressum</a>
+                <button @click="showImpressum = true" class="text-xs text-slate-700 hover:text-slate-500 transition-colors">Impressum</button>
+            </div>
+        </div>
+        
+        <!-- Impressum Modal -->
+        <div x-show="showImpressum" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm" x-transition.opacity>
+            <div @click.away="showImpressum = false" class="glass-card rounded-3xl w-full max-w-lg max-h-[80vh] overflow-y-auto" x-transition.scale>
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-display text-2xl font-bold">Impressum</h2>
+                        <button @click="showImpressum = false" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+                    </div>
+                    
+                    <div class="space-y-4 text-sm text-slate-300">
+                        <div>
+                            <h3 class="font-semibold text-yellow-400 mb-1">Angaben gemäß § 5 TMG</h3>
+                            <p>Maurice Walkenhorst</p>
+                            <p>Musterstraße 123</p>
+                            <p>44803 Bochum</p>
+                            <p>Deutschland</p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-yellow-400 mb-1">Kontakt</h3>
+                            <p>E-Mail: <a href="mailto:maurice@filmduel.de" class="text-yellow-400 hover:underline">maurice@filmduel.de</a></p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-yellow-400 mb-1">Haftungsausschluss</h3>
+                            <p class="text-xs text-slate-400">Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links.</p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-yellow-400 mb-1">Datenschutz</h3>
+                            <p class="text-xs text-slate-400">Diese Website speichert keine personenbezogenen Daten auf dem Server. Alle Einstellungen werden lokal im Browser gespeichert.</p>
+                        </div>
+                    </div>
+                    
+                    <button @click="showImpressum = false" class="mt-6 w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-colors">
+                        Schließen
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -280,6 +321,7 @@
             return {
                 tmdbBase: 'https://image.tmdb.org/t/p/w500',
                 mode: 'duel', // duel, building, results
+                showImpressum: false,
                 comparisons: 0,
                 maxRounds: 10,
                 selected: null,
