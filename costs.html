@@ -38,21 +38,18 @@
         </div>
 
         <!-- Breakdown Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <template x-for="model in currentModels" :key="model.name">
                 <div class="glass p-6 rounded-3xl border border-white/5 hover:border-blue-500/30 transition-colors">
                     <div class="flex justify-between items-start mb-4">
                         <div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400">
-                            <i class="fas fa-microchip"></i>
+                            <i :class="model.icon"></i>
                         </div>
                         <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest" x-text="model.share + '%'"></span>
                     </div>
                     <h3 class="font-bold text-white text-sm mb-1" x-text="model.name"></h3>
                     <div class="text-2xl font-black text-white mb-3" x-text="model.cost + ' €'"></div>
-                    <div class="text-[10px] text-slate-500 font-medium">
-                        <span x-text="formatNumber(model.input)"></span> In <br>
-                        <span x-text="formatNumber(model.output)"></span> Out
-                    </div>
+                    <div class="text-[10px] text-slate-500 font-medium" x-text="model.desc"></div>
                 </div>
             </template>
         </div>
@@ -91,17 +88,23 @@
                 viewLabel: 'Heute',
                 lastUpdate: '',
                 data: {
-                    day: { total: '2,84', inputTokens: 845000, outputTokens: 18500, models: [
-                        { name: 'Gemini 1.5 Pro', input: 450000, output: 12000, cost: '2,15', share: 76 },
-                        { name: 'Gemini 1.5 Flash', input: 395000, output: 6500, cost: '0,69', share: 24 }
+                    day: { total: '3,12', inputTokens: 845000, outputTokens: 18500, models: [
+                        { name: 'Gemini 1.5 Pro', cost: '2,15', share: 69, icon: 'fas fa-brain', desc: 'Coding & Logik' },
+                        { name: 'Gemini 1.5 Flash', cost: '0,69', share: 22, icon: 'fas fa-bolt', desc: 'Chat & OCR' },
+                        { name: 'Nano Banana Pro', cost: '0,18', share: 6, icon: 'fas fa-image', desc: 'Bild-Generierung' },
+                        { name: 'TTS & Whisper', cost: '0,10', share: 3, icon: 'fas fa-microphone', desc: 'Sprach-Features' }
                     ]},
-                    week: { total: '4,12', inputTokens: 1250000, outputTokens: 32000, models: [
-                        { name: 'Gemini 1.5 Pro', input: 620000, output: 18000, cost: '2,95', share: 72 },
-                        { name: 'Gemini 1.5 Flash', input: 630000, output: 14000, cost: '1,17', share: 28 }
+                    week: { total: '4,65', inputTokens: 1250000, outputTokens: 32000, models: [
+                        { name: 'Gemini 1.5 Pro', cost: '2,95', share: 63, icon: 'fas fa-brain', desc: 'Coding & Logik' },
+                        { name: 'Gemini 1.5 Flash', cost: '1,17', share: 25, icon: 'fas fa-bolt', desc: 'Chat & OCR' },
+                        { name: 'Nano Banana Pro', cost: '0,35', share: 8, icon: 'fas fa-image', desc: 'Bild-Generierung' },
+                        { name: 'TTS & Whisper', cost: '0,18', share: 4, icon: 'fas fa-microphone', desc: 'Sprach-Features' }
                     ]},
-                    month: { total: '4,12', inputTokens: 1250000, outputTokens: 32000, models: [
-                        { name: 'Gemini 1.5 Pro', input: 620000, output: 18000, cost: '2,95', share: 72 },
-                        { name: 'Gemini 1.5 Flash', input: 630000, output: 14000, cost: '1,17', share: 28 }
+                    month: { total: '4,65', inputTokens: 1250000, outputTokens: 32000, models: [
+                        { name: 'Gemini 1.5 Pro', cost: '2,95', share: 63, icon: 'fas fa-brain', desc: 'Coding & Logik' },
+                        { name: 'Gemini 1.5 Flash', cost: '1,17', share: 25, icon: 'fas fa-bolt', desc: 'Chat & OCR' },
+                        { name: 'Nano Banana Pro', cost: '0,35', share: 8, icon: 'fas fa-image', desc: 'Bild-Generierung' },
+                        { name: 'TTS & Whisper', cost: '0,18', share: 4, icon: 'fas fa-microphone', desc: 'Sprach-Features' }
                     ]}
                 },
                 init() {
