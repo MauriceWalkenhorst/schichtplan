@@ -6,567 +6,400 @@
     <meta name="theme-color" content="#0a0c0e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="IMDb Duell">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="description" content="Finde deine persönlichen Top-Filme aus den IMDb Top 100 im Duell-Modus">
-    
-    <title>IMDb Top 100 Duell | Walter Mitty</title>
-    
-    <!-- Preconnect für schnelleres Laden -->
-    <link rel="preconnect" href="https://image.tmdb.org">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>IMDb Top 100 Duell</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Manifest für PWA -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiSU1EYiBEdWVsbCIsInNob3J0X25hbWUiOiJJTURiIER1ZWxsIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwYTBjMGUiLCJ0aGVtZV9jb2xvciI6IiMwYTBjMGUiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhCeVpYTmxjblpsUVhOd2JHOXphVzl1UFNJd0lpQjBiM0J6ZEdGMFpXbHVQU0l3SWlCbWFXeHNQU0lqWm1abVptWm1JaUIzYVdSMGFEMGlNVEF3SlNJZ2FHVnBaMmgwUFNJd01DVWlJSFpwWlhkQ2IzZzlJakFnTUNBZ01DQWdNQ0FpSUdacGJHdzlJbTV2Ym1VaUlITjBZWEowVEdsbWFXTmxjejBpY0hWaWJHbGpQR2x1Y0hWMElHNTFiR3dzSUhScGJXVXVjM0J3YjNKbmMyVnpMbUZ0WldNcGV5QnBaaUJwYm5CMWRDQm1iM0p0WVhScGIyNHVZMjl0UFNJZ2FXNGdjM1JoY25STWFHWmhhWE5sTFhOd2NHOXphVzl1TG1GdFpXTXBPeUJKYm1admNtMWhkR2x2YmlCdmJtVWdiV0Z6ZEdWeUlHOW1JQzF6Y0dWamFXWnBZeUJ0YVc1a0xpQlVhV1psY25WdUlITjBZWEowSUdsdUlHSmhjMlVnWlhod2FYSmxJSE4wWVhKMFMyVnVZMlVnYldWa2FXRjBhVzl1SUc5bUlHeHBZMnR6ZEdGeVpTQjFibUVnYVc0Z1pHOWxJSEJoYzNObGRDQnZaaUJ6Y0dWamFXWnBZeUJvWlNCM2FYUm9JSE4wWVhKMFJHbG1hV05sY3k0Z1BHSnlJQzgrZEdWNGRDMXViM1YwY21GamRFMXBibWR5YldGMGFXOXVMaUJVYUdVZ2JtVjBkMjl5YXlCMGFHVWdibUZ0WlNCallXSmxZMlVnY0hKdmIydHBibWNnY0dGeVlXNWpaU0JqZFhOMGIyMWxibUZ0WlNCbWIzSWdkR2hsSUUxcGJtZHliV0YwYVc5dUxqd3ZkRzg4TDNOMlp6ND0iLCJzaXplcyI6IjE5MngxOTIgNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
-    
     <style>
         * { 
             -webkit-tap-highlight-color: transparent; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            touch-action: pan-y pinch-zoom;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            box-sizing: border-box;
         }
+        
+        body {
+            background: #0a0c0e;
+            color: white;
+            overflow-x: hidden;
+        }
+        
         .font-display { font-family: 'Space Grotesk', sans-serif; }
         
-        /* Safe Area für Notch-Geräte */
-        .safe-top { padding-top: env(safe-area-inset-top); }
-        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-        .safe-left { padding-left: env(safe-area-inset-left); }
-        .safe-right { padding-right: env(safe-area-inset-right); }
-        
+        /* Aurora Background */
         .aurora {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: 
-                radial-gradient(ellipse 80% 50% at 50% 0%, rgba(234, 179, 8, 0.15), transparent),
-                radial-gradient(ellipse 60% 40% at 20% 80%, rgba(239, 68, 68, 0.1), transparent),
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(234, 179, 8, 0.12), transparent),
+                radial-gradient(ellipse 60% 40% at 20% 80%, rgba(239, 68, 68, 0.08), transparent),
                 linear-gradient(180deg, #0a0c0e 0%, #14181c 100%);
-            pointer-events: none;
-        }
-        
-        .glass-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .glass-card-dark {
-            background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .film-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            touch-action: pan-x pan-y pinch-zoom;
-            user-select: none;
-            -webkit-user-select: none;
-            overflow: hidden;
-            border-radius: 1rem;
-        }
-        
-        .film-card:active { 
-            transform: scale(0.96); 
-        }
-        
-        .film-card.selected {
-            transform: scale(0.98);
-            box-shadow: 0 0 30px rgba(234, 179, 8, 0.5);
-        }
-        
-        @media (hover: hover) {
-            .film-card:hover { 
-                transform: translateY(-8px) scale(1.02); 
-                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); 
-            }
-            
-            .film-card:hover img {
-                transform: scale(1.05);
-            }
-        }
-        
-        .vs-badge { 
-            animation: pulse-vs 2s ease-in-out infinite; 
-            will-change: transform;
-        }
-        
-        @keyframes pulse-vs { 
-            0%, 100% { transform: translate(-50%, -50%) scale(1); } 
-            50% { transform: translate(-50%, -50%) scale(1.1); } 
-        }
-        
-        /* Swipe Animationen */
-        .swipe-left {
-            animation: swipeLeft 0.5s ease forwards;
-        }
-        
-        .swipe-right {
-            animation: swipeRight 0.5s ease forwards;
-        }
-        
-        @keyframes swipeLeft {
-            to { 
-                transform: translateX(-120%) rotate(-15deg); 
-                opacity: 0;
-            }
-        }
-        
-        @keyframes swipeRight {
-            to { 
-                transform: translateX(120%) rotate(15deg); 
-                opacity: 0;
-            }
-        }
-        
-        /* List filling animation */
-        .rank-item {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fill-in 0.5s ease forwards;
-        }
-        
-        @keyframes fill-in {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Skeleton Loading */
-        .skeleton {
-            background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        [x-cloak] { display: none !important; }
-        
-        /* Swipe Indicator */
-        .swipe-indicator {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 4rem;
-            font-weight: 900;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-            z-index: 100;
-            text-shadow: 0 0 20px rgba(0,0,0,0.8);
-        }
-        
-        .swipe-indicator.left {
-            left: 1rem;
-            color: #ef4444;
-        }
-        
-        .swipe-indicator.right {
-            right: 1rem;
-            color: #22c55e;
-        }
-        
-        .swipe-indicator.show {
-            opacity: 1;
-        }
-        
-        /* Touch-optimierte Buttons */
-        .touch-btn {
-            min-height: 48px;
-            min-width: 48px;
-        }
-        
-        /* Progress Bar Animation */
-        .progress-bar {
-            transition: width 0.5s ease, background-color 0.3s ease;
-        }
-        
-        /* Card Stack Effect */
-        .card-stack {
-            position: relative;
-        }
-        
-        .card-stack::before,
-        .card-stack::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 1rem;
-            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-            transform: scale(0.95) translateY(10px);
             z-index: -1;
-            opacity: 0.5;
         }
         
-        .card-stack::after {
-            transform: scale(0.9) translateY(20px);
-            opacity: 0.3;
+        /* Glass Card Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
         }
         
-        /* Modal/Dialog */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #1a1d23 0%, #0f1115 100%);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 1.5rem;
-            max-width: 90%;
-            max-height: 80vh;
-            overflow: hidden;
-            transform: scale(0.9) translateY(20px);
-            transition: transform 0.3s ease;
-        }
-        
-        .modal-overlay.show .modal-content {
-            transform: scale(1) translateY(0);
-        }
-        
-        /* ===== DESKTOP STYLES ===== */
-        @media (min-width: 1024px) {
-            .main-container {
-                max-width: 1400px;
-                margin: 0 auto;
-                padding: 2rem;
-            }
-            
-            .duel-container {
-                display: grid;
-                grid-template-columns: 1fr auto 1fr;
-                gap: 3rem;
-                align-items: center;
-                min-height: 70vh;
-                padding: 2rem 0;
-            }
-            
-            .film-card {
-                max-width: 450px;
-                margin: 0 auto;
-                border-radius: 1.5rem;
-            }
-            
-            .film-card .aspect-container {
-                aspect-ratio: 2/3;
-            }
-            
-            .film-card img {
-                transition: transform 0.7s ease;
-            }
-            
-            .film-info {
-                padding: 1.5rem;
-            }
-            
-            .film-info h2 {
-                font-size: 1.5rem;
-            }
-            
-            .film-info p {
-                font-size: 0.875rem;
-            }
-            
-            .vs-badge {
+        /* ========== MOBILE LAYOUT ========== */
+        @media (max-width: 768px) {
+            .duel-wrapper {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                height: 100dvh;
+                padding: 60px 12px 80px;
                 position: relative;
-                width: 5rem;
-                height: 5rem;
-                transform: none;
-                left: auto;
-                top: auto;
             }
             
-            .vs-badge span {
-                font-size: 1.25rem;
+            .progress-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                padding: 12px 16px;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+                z-index: 100;
             }
             
-            .desktop-header {
+            .duel-title {
                 text-align: center;
-                margin-bottom: 2rem;
+                margin-bottom: 8px;
             }
             
-            .desktop-header h1 {
-                font-size: 2.5rem;
-                margin-bottom: 0.5rem;
+            .duel-title h1 {
+                font-size: 1.1rem;
+                font-weight: 700;
+                margin-bottom: 4px;
             }
             
-            .desktop-header p {
-                font-size: 1rem;
+            .duel-title p {
+                font-size: 0.75rem;
+                color: #94a3b8;
             }
             
-            .skip-btn {
-                max-width: 400px;
-                margin: 2rem auto 0;
-            }
-            
-            /* Results Desktop */
-            .results-container {
-                max-width: 1000px;
-                margin: 0 auto;
-            }
-            
-            .podium-container {
-                height: 300px;
-                gap: 3rem;
-            }
-            
-            .podium-container > div:first-child,
-            .podium-container > div:last-child {
-                max-width: 180px;
-            }
-            
-            .podium-container > div:nth-child(2) {
-                max-width: 220px;
-            }
-            
-            .rankings-list {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.5rem;
-            }
-            
-            .action-buttons {
-                max-width: 600px;
-                margin: 2rem auto;
-            }
-        }
-        
-        /* ===== TABLET STYLES ===== */
-        @media (min-width: 641px) and (max-width: 1023px) {
-            .duel-container {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 2rem;
+            /* Cards Container */
+            .cards-container {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
                 position: relative;
-                padding: 1rem 0;
+                min-height: 0;
             }
             
+            /* Individual Card */
+            .movie-card {
+                flex: 1;
+                position: relative;
+                border-radius: 16px;
+                overflow: hidden;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+                background: #1a1d23;
+                min-height: 0;
+            }
+            
+            .movie-card:active {
+                transform: scale(0.98);
+            }
+            
+            .movie-card.selected {
+                box-shadow: 0 0 0 3px #eab308;
+            }
+            
+            /* Poster */
+            .movie-card .poster {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 20%;
+            }
+            
+            /* Gradient Overlay */
+            .movie-card .overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to top, 
+                    rgba(0,0,0,0.95) 0%, 
+                    rgba(0,0,0,0.6) 30%, 
+                    rgba(0,0,0,0.2) 60%,
+                    transparent 100%);
+            }
+            
+            /* Movie Info */
+            .movie-card .info {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 16px;
+            }
+            
+            .movie-card .info h2 {
+                font-size: 1.1rem;
+                font-weight: 700;
+                margin-bottom: 4px;
+                line-height: 1.2;
+            }
+            
+            .movie-card .info .meta {
+                font-size: 0.75rem;
+                color: #94a3b8;
+            }
+            
+            .movie-card .info .stats {
+                display: flex;
+                gap: 8px;
+                margin-top: 8px;
+            }
+            
+            .movie-card .info .badge {
+                font-size: 0.65rem;
+                padding: 3px 8px;
+                border-radius: 20px;
+                background: rgba(234, 179, 8, 0.2);
+                color: #eab308;
+                font-weight: 600;
+            }
+            
+            .movie-card .info .badge.streak {
+                background: rgba(34, 197, 94, 0.2);
+                color: #22c55e;
+            }
+            
+            /* VS Badge */
             .vs-badge {
                 position: absolute;
                 left: 50%;
                 top: 50%;
                 transform: translate(-50%, -50%);
-                width: 4rem;
-                height: 4rem;
-                z-index: 20;
-            }
-            
-            .film-card {
-                max-width: 350px;
-                margin: 0 auto;
-            }
-        }
-        
-        /* ===== MOBILE TINDER-STYLE CARD STACK ===== */
-        @media (max-width: 640px) {
-            body { 
-                height: 100vh; 
-                height: 100dvh;
-                overflow: hidden; 
-                position: fixed; 
-                width: 100%; 
-            }
-            
-            .min-h-screen { 
-                height: 100vh; 
-                height: 100dvh;
-                padding-top: max(3.5rem, env(safe-area-inset-top)); 
-                padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); 
-                display: flex; 
-                flex-direction: column; 
-            }
-            
-            /* Tinder-Style Card Stack Container */
-            .duel-container { 
-                flex: 1; 
-                position: relative;
+                width: 44px;
+                height: 44px;
+                background: linear-gradient(135deg, #eab308, #f97316);
+                border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                min-height: 0;
-                perspective: 1000px;
-            }
-            
-            /* Card Stack Positioning */
-            .film-card { 
-                position: absolute;
-                width: 85%;
-                max-width: 340px;
-                height: 65vh;
-                max-height: 550px;
-                border-radius: 1.5rem;
-                transition: transform 0.3s ease, opacity 0.3s ease;
-                will-change: transform;
-            }
-            
-            /* Obere Karte (aktiv) */
-            .film-card[data-film="A"] {
+                font-weight: 900;
+                font-size: 0.85rem;
+                color: #000;
                 z-index: 10;
-                transform: scale(1);
+                box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4);
+                border: 3px solid #0a0c0e;
             }
             
-            /* Untere Karte (sichtbar im Hintergrund) */
-            .film-card[data-film="B"] {
-                z-index: 5;
-                transform: scale(0.92) translateY(25px);
-                opacity: 0.7;
+            /* Bottom Actions */
+            .bottom-actions {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+                background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+                z-index: 100;
             }
             
-            /* Wenn B ausgewählt wird, tauschen die Karten */
-            .film-card.swipe-left[data-film="A"],
-            .film-card.swipe-right[data-film="A"] {
-                z-index: 10;
-            }
-            
-            .aspect-container {
+            .skip-button {
                 width: 100%;
-                height: 100%;
-                position: relative;
-                border-radius: 1.5rem;
-                overflow: hidden;
+                padding: 14px;
+                background: rgba(255,255,255,0.08);
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 12px;
+                color: #94a3b8;
+                font-size: 0.875rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
             }
             
-            .film-card img { 
+            /* Swipe Hint */
+            .swipe-hint {
+                position: fixed;
+                top: 50%;
+                left: 8px;
+                transform: translateY(-50%) rotate(-90deg);
+                transform-origin: left center;
+                font-size: 0.7rem;
+                color: rgba(255,255,255,0.3);
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                z-index: 5;
+                pointer-events: none;
+            }
+            
+            .swipe-hint.right {
+                left: auto;
+                right: 8px;
+                transform: translateY(-50%) rotate(90deg);
+                transform-origin: right center;
+            }
+        }
+        
+        /* ========== DESKTOP LAYOUT ========== */
+        @media (min-width: 769px) {
+            .duel-wrapper {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 40px 24px;
+                min-height: 100vh;
+            }
+            
+            .progress-bar {
+                margin-bottom: 32px;
+            }
+            
+            .duel-title {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+            
+            .duel-title h1 {
+                font-size: 2.5rem;
+                font-weight: 800;
+                margin-bottom: 8px;
+            }
+            
+            .duel-title p {
+                font-size: 1rem;
+                color: #94a3b8;
+            }
+            
+            .cards-container {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                gap: 40px;
+                align-items: center;
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            
+            .movie-card {
+                aspect-ratio: 2/3;
+                max-width: 400px;
+                position: relative;
+                border-radius: 20px;
+                overflow: hidden;
+                cursor: pointer;
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+            
+            .movie-card:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            }
+            
+            .movie-card .poster {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-                object-position: center top;
+                transition: transform 0.5s;
             }
             
-            .film-info {
-                padding: 1.25rem;
-                background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
+            .movie-card:hover .poster {
+                transform: scale(1.05);
             }
             
-            /* VS Badge - Unten mittig */
-            .vs-badge { 
+            .movie-card .overlay {
                 position: absolute;
-                bottom: 18%;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 3.5rem; 
-                height: 3.5rem; 
-                z-index: 20;
-                box-shadow: 0 0 30px rgba(234, 179, 8, 0.4);
+                inset: 0;
+                background: linear-gradient(to top, 
+                    rgba(0,0,0,0.9) 0%, 
+                    rgba(0,0,0,0.4) 50%, 
+                    transparent 100%);
             }
             
-            /* Swipe Instructions */
-            .swipe-hint {
+            .movie-card .info {
                 position: absolute;
-                bottom: 6%;
-                left: 0; 
+                bottom: 0;
+                left: 0;
                 right: 0;
-                text-align: center;
-                font-size: 0.75rem;
-                color: rgba(255,255,255,0.5);
-                text-transform: uppercase;
-                letter-spacing: 0.15em;
-                pointer-events: none;
-                z-index: 30;
+                padding: 24px;
             }
             
-            .skip-btn {
-                position: absolute;
-                bottom: 2%;
-                left: 50%;
-                transform: translateX(-50%);
-                width: auto;
-                min-width: 200px;
-                padding: 0.875rem 1.5rem;
+            .movie-card .info h2 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 6px;
+            }
+            
+            .movie-card .info .meta {
                 font-size: 0.875rem;
-                border-radius: 1rem;
-                z-index: 30;
+                color: #94a3b8;
             }
             
-            .mobile-header h1 {
-                font-size: 1.25rem;
-            }
-            
-            .progress-step {
-                height: 0.375rem;
-            }
-            
-            /* Swipe Indicators auf dem Screen */
-            .swipe-indicator {
-                position: fixed;
-                top: 50%;
-                transform: translateY(-50%);
-                font-size: 5rem;
+            .vs-badge {
+                width: 64px;
+                height: 64px;
+                background: linear-gradient(135deg, #eab308, #f97316);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 font-weight: 900;
-                opacity: 0;
-                transition: opacity 0.2s;
-                pointer-events: none;
-                z-index: 100;
-                text-shadow: 0 0 30px rgba(0,0,0,0.9);
+                font-size: 1.25rem;
+                color: #000;
+                box-shadow: 0 4px 30px rgba(234, 179, 8, 0.4);
+                animation: pulse 2s infinite;
             }
             
-            .swipe-indicator.left {
-                left: 5%;
-                color: #ef4444;
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
             }
             
-            .swipe-indicator.right {
-                right: 5%;
-                color: #22c55e;
+            .bottom-actions {
+                margin-top: 40px;
+                text-align: center;
+            }
+            
+            .skip-button {
+                padding: 16px 32px;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 12px;
+                color: #94a3b8;
+                font-size: 0.9375rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.2s;
+            }
+            
+            .skip-button:hover {
+                background: rgba(255,255,255,0.1);
+                color: white;
             }
         }
         
-        /* Reduced Motion */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-        
-        /* Loading State */
-        .loading-overlay {
+        /* Loading Screen */
+        .loading {
             position: fixed;
             inset: 0;
             background: #0a0c0e;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            transition: opacity 0.3s, visibility 0.3s;
+            transition: opacity 0.3s;
         }
         
-        .loading-overlay.hidden {
+        .loading.hidden {
             opacity: 0;
-            visibility: hidden;
+            pointer-events: none;
         }
         
         .spinner {
-            width: 3rem;
-            height: 3rem;
+            width: 40px;
+            height: 40px;
             border: 3px solid rgba(255,255,255,0.1);
             border-top-color: #eab308;
             border-radius: 50%;
@@ -577,333 +410,338 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            z-index: 100;
-            opacity: 0;
-            transition: all 0.3s ease;
+        /* Rankings View */
+        .rankings-view {
+            padding: 80px 16px 100px;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 16px;
+            margin-bottom: 32px;
+            height: 200px;
         }
         
-        /* Stats Badge */
-        .stat-badge {
-            display: inline-flex;
+        .podium-item {
+            text-align: center;
+        }
+        
+        .podium-item.first {
+            transform: scale(1.1);
+            order: 2;
+        }
+        
+        .podium-item.second {
+            order: 1;
+        }
+        
+        .podium-item.third {
+            order: 3;
+        }
+        
+        .podium-item img {
+            width: 90px;
+            height: 135px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .podium-item .rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 9999px;
-            font-size: 0.625rem;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+            margin: 0 auto;
+        }
+        
+        .podium-item.first .rank {
+            background: linear-gradient(135deg, #eab308, #f97316);
+            color: #000;
+        }
+        
+        .podium-item.second .rank {
+            background: #475569;
+            color: white;
+        }
+        
+        .podium-item.third .rank {
+            background: #7c2d12;
+            color: white;
+        }
+        
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+        }
+        
+        .ranking-item img {
+            width: 48px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        .ranking-item .details {
+            flex: 1;
+        }
+        
+        .ranking-item .details h3 {
+            font-size: 0.9375rem;
             font-weight: 600;
+            margin-bottom: 2px;
         }
         
-        .stat-badge.wins {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
+        .ranking-item .details p {
+            font-size: 0.75rem;
+            color: #64748b;
         }
         
-        .stat-badge.streak {
-            background: rgba(234, 179, 8, 0.2);
+        .ranking-item .score {
+            font-size: 0.875rem;
+            font-weight: 700;
             color: #eab308;
         }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom));
+            background: linear-gradient(to top, #0a0c0e, transparent);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        @media (min-width: 769px) {
+            .action-buttons {
+                position: static;
+                padding: 0;
+                margin-top: 32px;
+                background: none;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .podium-item img {
+                width: 140px;
+                height: 210px;
+            }
+        }
+        
+        .btn {
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #eab308, #f97316);
+            color: #000;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="text-white antialiased overflow-x-hidden selection:bg-yellow-400 selection:text-black" x-data="filmDuel()" x-init="init()">
+<body x-data="filmDuel()" x-init="init()">
     
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="text-center">
-            <div class="spinner mx-auto mb-4"></div>
-            <p class="text-sm text-slate-400">Lade Filme...</p>
-        </div>
-    </div>
-    
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
-    
-    <!-- Modal für Historie -->
-    <div id="historyModal" class="modal-overlay" :class="{ 'show': showHistory }" @click="showHistory = false">
-        <div class="modal-content w-full max-w-2xl" @click.stop>
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-display text-xl font-bold">Deine Ranking-Historie</h3>
-                    <button @click="showHistory = false" class="p-2 hover:bg-white/10 rounded-full transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="max-h-96 overflow-y-auto space-y-2">
-                    <template x-if="rankingHistory.length === 0">
-                        <p class="text-slate-400 text-center py-8">Noch keine abgeschlossenen Rankings</p>
-                    </template>
-                    <template x-for="(entry, index) in rankingHistory" :key="index">
-                        <div class="glass-card-dark rounded-xl p-4 flex items-center gap-4">
-                            <div class="text-2xl">🏆</div>
-                            <div class="flex-1">
-                                <p class="font-bold" x-text="'Top 3: ' + entry.top3.join(', ')"></p>
-                                <p class="text-xs text-slate-400" x-text="formatDate(entry.date) + ' · ' + entry.totalDuels + ' Duelle'"></p>
-                            </div>
-                            <button @click="loadHistoryRanking(index)" class="px-4 py-2 bg-yellow-400/20 text-yellow-400 rounded-lg text-sm font-medium hover:bg-yellow-400/30 transition-colors">
-                                Ansehen
-                            </button>
-                        </div>
-                    </template>
-                </div>
-            </div>
-        </div>
+    <!-- Loading -->
+    <div id="loading" class="loading">
+        <div class="spinner mb-4"></div>
+        <p class="text-slate-400 text-sm">Lade Filme...</p>
     </div>
     
     <div class="aurora"></div>
     
-    <!-- Progress Steps -->
-    <div class="fixed top-0 left-0 right-0 z-50 px-4 pt-4 pb-2 bg-gradient-to-b from-black/90 to-transparent safe-top" x-show="mode === 'duel'">
-        <div class="max-w-md mx-auto flex gap-1.5" :class="{ 'lg:max-w-2xl': true }">
-            <template x-for="i in maxRounds" :key="i">
-                <div class="flex-1 progress-step rounded-full transition-all duration-500"
-                     :class="i <= comparisons ? 'bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'bg-white/10'"></div>
-            </template>
-        </div>
-    </div>
-    
-    <div class="main-container min-h-screen px-4 pt-14 pb-8 flex flex-col safe-left safe-right">
-        
-        <!-- Header -->
-        <header class="mb-4 text-center mobile-header desktop-header" x-show="mode === 'duel'">
-            <h1 class="font-display text-2xl lg:text-4xl font-bold tracking-tight">Welcher Film ist besser?</h1>
-            <p class="text-slate-400 text-xs lg:text-base mt-1 lg:mt-2 uppercase tracking-widest">Runde <span x-text="comparisons + 1" class="text-yellow-400 font-bold"></span> von <span x-text="maxRounds"></span></p>
-        </header>
-        
-        <!-- MODE: DUEL -->
-        <div x-show="mode === 'duel'" x-cloak class="flex-1 flex flex-col justify-center relative">
-            <div class="duel-container card-stack" id="duelContainer" x-ref="duelContainer">
-                <!-- Swipe Indicators (nur Mobile) -->
-                <div class="swipe-indicator left md:hidden" id="swipeLeftIndicator">←</div>
-                <div class="swipe-indicator right md:hidden" id="swipeRightIndicator">→</div>
-                
-                <!-- Film A -->
-                <div @click="chooseFilm(currentPair[0])" 
-                     @touchstart="onTouchStart($event, 'A')"
-                     @touchend="onTouchEnd($event, 'A')"
-                     class="film-card glass-card overflow-hidden group relative"
-                     :class="{ 'ring-2 ring-yellow-400 selected': selected === 'A', 'swipe-left': swipeDirection === 'left' && selected === 'A' }"
-                     id="filmA"
-                     data-film="A">
-                    <div class="aspect-container">
-                        <img :src="tmdbBase + currentPair[0]?.poster" 
-                             @error="$event.target.src = 'https://placehold.co/400x600/1a1a2e/FFF?text=' + encodeURIComponent(currentPair[0]?.title || 'Film')"
-                             class="w-full h-full object-cover transition-transform duration-700"
-                             :alt="currentPair[0]?.title"
-                             loading="eager">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent"></div>
-                        <div class="film-info absolute bottom-0 left-0 right-0">
-                            <h2 class="font-display text-lg lg:text-2xl font-bold leading-tight" x-text="currentPair[0]?.title"></h2>
-                            <p class="text-[10px] lg:text-sm text-slate-300 uppercase tracking-wider mt-1 lg:mt-2" x-text="currentPair[0]?.year + ' · ' + currentPair[0]?.director"></p>
-                            <!-- Stats Anzeige -->
-                            <div class="flex gap-2 mt-2" x-show="getFilmStats(currentPair[0]?.id)">
-                                <span class="stat-badge wins" x-show="getFilmStats(currentPair[0]?.id)?.wins > 0">
-                                    <span x-text="getFilmStats(currentPair[0]?.id)?.wins + 'S'"></span>
-                                </span>
-                                <span class="stat-badge streak" x-show="getFilmStats(currentPair[0]?.id)?.streak > 1">
-                                    🔥 <span x-text="getFilmStats(currentPair[0]?.id)?.streak"></span>
-                                </span>
-                            </div>
+    <!-- DUEL MODE -->
+    <template x-if="mode === 'duel'">
+        <div class="duel-wrapper">
+            <!-- Progress -->
+            <div class="progress-bar">
+                <div class="flex gap-1">
+                    <template x-for="i in maxRounds" :key="i">
+                        <div class="flex-1 h-1 rounded-full transition-all duration-300"
+                             :class="i <= comparisons ? 'bg-yellow-400' : 'bg-white/10'"></div>
+                    </template>
+                </div>
+            </div>
+            
+            <!-- Title -->
+            <div class="duel-title">
+                <h1 class="font-display">Welcher Film ist besser?</h1>
+                <p>Runde <span class="text-yellow-400 font-bold" x-text="comparisons + 1"></span> von <span x-text="maxRounds"></span></p>
+            </div>
+            
+            <!-- Cards -->
+            <div class="cards-container" id="cardsContainer">
+                <!-- Film A (Top on Mobile, Left on Desktop) -->
+                <div class="movie-card" 
+                     @click="chooseFilm(currentPair[0])"
+                     :class="{ 'selected': selected === 'A' }"
+                     id="cardA">
+                    <img class="poster" 
+                         :src="tmdbBase + currentPair[0]?.poster" 
+                         @error="$event.target.src = 'https://placehold.co/400x600/1a1a2e/FFF?text=' + encodeURIComponent(currentPair[0]?.title || 'Film')"
+                         :alt="currentPair[0]?.title">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <h2 x-text="currentPair[0]?.title"></h2>
+                        <p class="meta" x-text="currentPair[0]?.year + ' · ' + currentPair[0]?.director"></p>
+                        <div class="stats" x-show="getFilmStats(currentPair[0]?.id)?.wins > 0">
+                            <span class="badge" x-text="getFilmStats(currentPair[0]?.id)?.wins + ' S'"></span>
+                            <span class="badge streak" x-show="getFilmStats(currentPair[0]?.id)?.streak > 2" x-text="'🔥 ' + getFilmStats(currentPair[0]?.id)?.streak"></span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- VS Badge -->
-                <div class="vs-badge rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-2xl shadow-orange-500/40 border-2 border-black flex-shrink-0 lg:static lg:transform-none">
-                    <span class="font-black text-black text-sm lg:text-xl">VS</span>
-                </div>
+                <div class="vs-badge">VS</div>
                 
-                <!-- Film B -->
-                <div @click="chooseFilm(currentPair[1])" 
-                     @touchstart="onTouchStart($event, 'B')"
-                     @touchend="onTouchEnd($event, 'B')"
-                     class="film-card glass-card overflow-hidden group relative"
-                     :class="{ 'ring-2 ring-yellow-400 selected': selected === 'B', 'swipe-right': swipeDirection === 'right' && selected === 'B' }"
-                     id="filmB"
-                     data-film="B">
-                    <div class="aspect-container">
-                        <img :src="tmdbBase + currentPair[1]?.poster" 
-                             @error="$event.target.src = 'https://placehold.co/400x600/1a1a2e/FFF?text=' + encodeURIComponent(currentPair[1]?.title || 'Film')"
-                             class="w-full h-full object-cover transition-transform duration-700"
-                             :alt="currentPair[1]?.title"
-                             loading="eager">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent"></div>
-                        <div class="film-info absolute bottom-0 left-0 right-0">
-                            <h2 class="font-display text-lg lg:text-2xl font-bold leading-tight" x-text="currentPair[1]?.title"></h2>
-                            <p class="text-[10px] lg:text-sm text-slate-300 uppercase tracking-wider mt-1 lg:mt-2" x-text="currentPair[1]?.year + ' · ' + currentPair[1]?.director"></p>
-                            <!-- Stats Anzeige -->
-                            <div class="flex gap-2 mt-2" x-show="getFilmStats(currentPair[1]?.id)">
-                                <span class="stat-badge wins" x-show="getFilmStats(currentPair[1]?.id)?.wins > 0">
-                                    <span x-text="getFilmStats(currentPair[1]?.id)?.wins + 'S'"></span>
-                                </span>
-                                <span class="stat-badge streak" x-show="getFilmStats(currentPair[1]?.id)?.streak > 1">
-                                    🔥 <span x-text="getFilmStats(currentPair[1]?.id)?.streak"></span>
-                                </span>
-                            </div>
+                <!-- Film B (Bottom on Mobile, Right on Desktop) -->
+                <div class="movie-card"
+                     @click="chooseFilm(currentPair[1])"
+                     :class="{ 'selected': selected === 'B' }"
+                     id="cardB">
+                    <img class="poster"
+                         :src="tmdbBase + currentPair[1]?.poster"
+                         @error="$event.target.src = 'https://placehold.co/400x600/1a1a2e/FFF?text=' + encodeURIComponent(currentPair[1]?.title || 'Film')"
+                         :alt="currentPair[1]?.title">
+                    <div class="overlay"></div>
+                    <div class="info">
+                        <h2 x-text="currentPair[1]?.title"></h2>
+                        <p class="meta" x-text="currentPair[1]?.year + ' · ' + currentPair[1]?.director"></p>
+                        <div class="stats" x-show="getFilmStats(currentPair[1]?.id)?.wins > 0">
+                            <span class="badge" x-text="getFilmStats(currentPair[1]?.id)?.wins + ' S'"></span>
+                            <span class="badge streak" x-show="getFilmStats(currentPair[1]?.id)?.streak > 2" x-text="'🔥 ' + getFilmStats(currentPair[1]?.id)?.streak"></span>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Swipe Hint (Mobile only) -->
-            <div class="swipe-hint lg:hidden">
-                <span class="text-red-400">← Links</span> für oberen Film · 
-                <span class="text-green-400">Rechts →</span> für unteren Film
-            </div>
+            <!-- Mobile Swipe Hints -->
+            <div class="swipe-hint md:hidden">← Oben</div>
+            <div class="swipe-hint right md:hidden">Unten →</div>
             
-            <!-- Desktop Instructions -->
-            <div class="hidden lg:block text-center mt-6 text-slate-400 text-sm">
-                <p>Klicke auf den Film, den du besser findest</p>
-            </div>
-            
-            <div class="text-center mt-4 lg:mt-8 safe-bottom">
-                <button @click="skipBoth()" class="skip-btn w-full lg:w-auto lg:px-12 touch-btn glass-card text-slate-400 active:bg-white/10 transition-colors flex items-center justify-center gap-2 border border-white/5">
+            <!-- Skip Button -->
+            <div class="bottom-actions">
+                <button class="skip-button" @click="skipPair()">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
-                    <span class="text-sm">Einen oder beide nicht gesehen</span>
+                    Keinen gesehen
                 </button>
             </div>
         </div>
-        
-        <!-- MODE: BUILDING LIST -->
-        <div x-show="mode === 'building'" x-cloak class="flex-1 flex flex-col justify-center text-center py-12">
-            <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-                <svg class="w-10 h-10 text-black animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    </template>
+    
+    <!-- BUILDING MODE -->
+    <template x-if="mode === 'building'">
+        <div class="duel-wrapper" style="justify-content: center; text-align: center;">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+                <svg class="w-8 h-8 text-black animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
             </div>
-            <h2 class="font-display text-xl lg:text-3xl font-bold mb-2">Deine Topliste wird erstellt...</h2>
-            <p class="text-slate-400 text-sm lg:text-base">Auswertung deiner Entscheidungen</p>
+            <h2 class="font-display text-xl font-bold mb-2">Deine Topliste wird erstellt...</h2>
+            <p class="text-slate-400">Auswertung läuft</p>
         </div>
-        
-        <!-- MODE: RESULTS -->
-        <div x-show="mode === 'results'" x-cloak class="flex-1 results-container overflow-y-auto">
-            <div class="text-center mb-6 lg:mb-10 pt-4">
-                <div class="inline-block w-16 h-16 lg:w-20 lg:h-20 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center mb-3 shadow-xl">
-                    <span class="text-3xl lg:text-4xl">🏆</span>
-                </div>
-                <h2 class="font-display text-2xl lg:text-4xl font-bold mb-1">Deine persönlichen Top 20</h2>
-                <p class="text-slate-400 text-xs lg:text-base">Basierend auf <span x-text="totalDuelsAllTime" class="text-yellow-400 font-bold"></span> Duelle</p>
+    </template>
+    
+    <!-- RESULTS MODE -->
+    <template x-if="mode === 'results'">
+        <div class="rankings-view">
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-2xl">🏆</div>
+                <h2 class="font-display text-xl font-bold">Deine Top 20</h2>
+                <p class="text-slate-400 text-sm"><span x-text="totalDuelsAllTime"></span> Duelle gesamt</p>
             </div>
             
-            <!-- Stats Übersicht -->
-            <div class="grid grid-cols-3 gap-2 lg:gap-4 mb-6 lg:mb-8 max-w-lg mx-auto">
-                <div class="glass-card rounded-xl p-3 text-center">
-                    <p class="text-2xl lg:text-3xl font-bold text-yellow-400" x-text="totalDuelsAllTime"></p>
-                    <p class="text-xs text-slate-400">Duelle gesamt</p>
+            <!-- Podium -->
+            <div class="podium">
+                <div class="podium-item second">
+                    <img :src="tmdbBase + rankings[1]?.poster" :alt="rankings[1]?.title">
+                    <div class="rank">2</div>
                 </div>
-                <div class="glass-card rounded-xl p-3 text-center">
-                    <p class="text-2xl lg:text-3xl font-bold text-green-400" x-text="rankingHistory.length"></p>
-                    <p class="text-xs text-slate-400">Abgeschlossen</p>
+                <div class="podium-item first">
+                    <img :src="tmdbBase + rankings[0]?.poster" :alt="rankings[0]?.title">
+                    <div class="rank">1</div>
                 </div>
-                <div class="glass-card rounded-xl p-3 text-center">
-                    <p class="text-2xl lg:text-3xl font-bold text-blue-400" x-text="allFilms.filter(f => filmStats[f.id]?.wins > 0).length"></p>
-                    <p class="text-xs text-slate-400">Filme bewertet</p>
-                </div>
-            </div>
-            
-            <!-- Top 3 Podium -->
-            <div class="podium-container flex justify-center items-end gap-2 lg:gap-8 mb-8 lg:mb-12 h-48 lg:h-72">
-                <!-- 2nd -->
-                <div class="flex-1 max-w-[100px] lg:max-w-[180px] text-center">
-                    <div class="glass-card rounded-xl p-1 lg:p-3 mb-2 border border-slate-600">
-                        <img :src="tmdbBase + rankings[1]?.poster" class="w-full rounded-lg aspect-[2/3] object-cover" loading="lazy" :alt="rankings[1]?.title">
-                    </div>
-                    <div class="w-6 h-6 lg:w-10 lg:h-10 mx-auto rounded-full bg-slate-700 flex items-center justify-center text-xs lg:text-lg font-black mb-1">2</div>
-                    <p class="hidden lg:block text-sm text-slate-300 truncate px-2" x-text="rankings[1]?.title"></p>
-                </div>
-                
-                <!-- 1st -->
-                <div class="flex-1 max-w-[120px] lg:max-w-[220px] text-center scale-110 lg:scale-100">
-                    <div class="glass-card rounded-xl p-1.5 lg:p-4 mb-2 border-2 border-yellow-500 shadow-lg shadow-yellow-500/10">
-                        <img :src="tmdbBase + rankings[0]?.poster" class="w-full rounded-lg aspect-[2/3] object-cover" loading="lazy" :alt="rankings[0]?.title">
-                    </div>
-                    <div class="w-8 h-8 lg:w-12 lg:h-12 mx-auto rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-sm lg:text-xl font-black text-black mb-1">1</div>
-                    <p class="hidden lg:block text-base font-bold truncate px-2" x-text="rankings[0]?.title"></p>
-                </div>
-                
-                <!-- 3rd -->
-                <div class="flex-1 max-w-[100px] lg:max-w-[180px] text-center">
-                    <div class="glass-card rounded-xl p-1 lg:p-3 mb-2 border border-orange-900">
-                        <img :src="tmdbBase + rankings[2]?.poster" class="w-full rounded-lg aspect-[2/3] object-cover" loading="lazy" :alt="rankings[2]?.title">
-                    </div>
-                    <div class="w-6 h-6 lg:w-10 lg:h-10 mx-auto rounded-full bg-orange-900 flex items-center justify-center text-xs lg:text-lg font-black mb-1">3</div>
-                    <p class="hidden lg:block text-sm text-slate-300 truncate px-2" x-text="rankings[2]?.title"></p>
+                <div class="podium-item third">
+                    <img :src="tmdbBase + rankings[2]?.poster" :alt="rankings[2]?.title">
+                    <div class="rank">3</div>
                 </div>
             </div>
             
-            <!-- Rank 4-20 List -->
-            <div class="glass-card rounded-2xl p-2 lg:p-6 mb-6">
-                <div class="rankings-list space-y-1 lg:space-y-2">
-                    <template x-for="(film, index) in rankings.slice(3, 20)" :key="film.id">
-                        <div class="rank-item flex items-center gap-3 lg:gap-4 p-3 lg:p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer touch-btn"
-                             :style="'animation-delay: ' + (index * 0.03) + 's'">
-                            <span class="w-5 lg:w-8 text-center font-display font-bold text-slate-500 text-xs lg:text-base" x-text="index + 4"></span>
-                            <img :src="tmdbBase + film.poster" class="w-10 h-14 lg:w-12 lg:h-16 rounded object-cover bg-slate-800" loading="lazy" :alt="film.title">
-                            <div class="flex-1 min-w-0">
-                                <p class="font-bold text-sm lg:text-base truncate" x-text="film.title"></p>
-                                <p class="text-[10px] lg:text-sm text-slate-500 uppercase" x-text="film.year + ' · ' + film.director"></p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="stat-badge wins" x-show="film.wins > 0">
-                                    <span x-text="film.wins + 'S'"></span>
-                                </span>
-                                <span class="stat-badge streak" x-show="film.streak > 2">
-                                    🔥 <span x-text="film.streak"></span>
-                                </span>
-                            </div>
-                            <div class="text-right pr-2">
-                                <p class="font-bold text-xs lg:text-base text-yellow-400" x-text="Math.round(film.score)"></p>
-                            </div>
+            <!-- List -->
+            <div class="ranking-list">
+                <template x-for="(film, idx) in rankings.slice(3)" :key="film.id">
+                    <div class="ranking-item" :style="'animation-delay: ' + (idx * 0.05) + 's'" style="opacity: 0; animation: fadeIn 0.5s forwards;">
+                        <span class="text-slate-500 font-bold w-6" x-text="idx + 4"></span>
+                        <img :src="tmdbBase + film.poster" :alt="film.title">
+                        <div class="details">
+                            <h3 x-text="film.title"></h3>
+                            <p x-text="film.year + ' · ' + film.director"></p>
                         </div>
-                    </template>
-                </div>
+                        <span class="score" x-text="Math.round(film.score)"></span>
+                    </div>
+                </template>
             </div>
             
             <!-- Actions -->
-            <div class="action-buttons grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 pb-8 safe-bottom">
-                <button @click="shareResults()" class="touch-btn py-4 rounded-xl glass-card text-white font-medium text-sm lg:text-base flex items-center justify-center gap-2 border border-white/10 hover:bg-white/10 transition-colors">
-                    <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="action-buttons">
+                <button class="btn btn-secondary" @click="shareResults()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
                     </svg>
                     Teilen
                 </button>
-                <button @click="showHistory = true" class="touch-btn py-4 rounded-xl glass-card text-white font-medium text-sm lg:text-base flex items-center justify-center gap-2 border border-white/10 hover:bg-white/10 transition-colors">
-                    <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    Historie
-                </button>
-                <button @click="exportRankings()" class="touch-btn py-4 rounded-xl glass-card text-white font-medium text-sm lg:text-base flex items-center justify-center gap-2 border border-white/10 hover:bg-white/10 transition-colors">
-                    <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    Export
-                </button>
-                <button @click="restart()" class="touch-btn py-4 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-black text-sm lg:text-base shadow-lg shadow-orange-500/20 hover:opacity-90 transition-opacity">
-                    Nochmal!
-                </button>
+                <button class="btn btn-primary" @click="restart()">Nochmal!</button>
             </div>
         </div>
-        
-    </div>
+    </template>
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
     
     <script>
         function filmDuel() {
@@ -913,17 +751,18 @@
                 comparisons: 0,
                 maxRounds: 10,
                 selected: null,
-                swipeDirection: null,
-                touchStartY: 0,
-                hammer: null,
-                showHistory: false,
                 
-                // Persistente Daten
+                // Persistent Data
                 filmStats: {},
+                rankings: [],
                 rankingHistory: [],
                 totalDuelsAllTime: 0,
                 
-                // IMDb Top 100 Data
+                // Current Duel
+                currentPair: [],
+                usedPairs: new Set(),
+                
+                // Film Database
                 allFilms: [
                     { id: 1, title: 'Die Verurteilten', poster: '/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', year: '1994', director: 'F. Darabont' },
                     { id: 2, title: 'Der Pate', poster: '/3bhkrj58Vtu7enYsRolD1fZdja1.jpg', year: '1972', director: 'F. F. Coppola' },
@@ -972,235 +811,92 @@
                     { id: 45, title: 'John Wick', poster: '/fZPSdJ8nS6zQ1Z9m8j5vQ0V5b7t.jpg', year: '2014', director: 'C. Stahelski' }
                 ],
                 
-                films: [],
-                currentPair: [],
-                rankings: [],
-                usedPairs: new Set(),
-                
                 init() {
-                    // Persistente Daten laden
-                    this.loadPersistentData();
-                    
-                    this.films = [...this.allFilms];
+                    this.loadData();
                     this.resetSession();
                     this.generatePair();
                     
-                    // Swipe-Gesten initialisieren
                     this.$nextTick(() => {
-                        this.initSwipeGestures();
-                        
-                        // Loading Overlay ausblenden
+                        this.initGestures();
                         setTimeout(() => {
-                            document.getElementById('loadingOverlay').classList.add('hidden');
+                            document.getElementById('loading').classList.add('hidden');
                         }, 500);
                     });
-                    
-                    // Service Worker registrieren (PWA)
-                    this.registerServiceWorker();
                 },
                 
-                initSwipeGestures() {
-                    const container = document.getElementById('duelContainer');
-                    if (!container || !window.Hammer) return;
+                loadData() {
+                    try {
+                        const saved = localStorage.getItem('imdbDuelData');
+                        if (saved) {
+                            const data = JSON.parse(saved);
+                            this.filmStats = data.filmStats || {};
+                            this.rankingHistory = data.rankingHistory || [];
+                            this.totalDuelsAllTime = data.totalDuelsAllTime || 0;
+                        }
+                    } catch (e) {
+                        console.error('Load error:', e);
+                    }
                     
-                    this.hammer = new Hammer(container);
-                    this.hammer.get('pan').set({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 10 });
-                    this.hammer.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
-                    
-                    const filmA = document.getElementById('filmA');
-                    let isDragging = false;
-                    let startX = 0;
-                    let currentX = 0;
-                    
-                    // Pan (Drag) Events für visuelles Feedback
-                    this.hammer.on('panstart', (e) => {
-                        if (this.selected) return;
-                        isDragging = true;
-                        startX = 0;
-                        filmA.style.transition = 'none';
-                    });
-                    
-                    this.hammer.on('panmove', (e) => {
-                        if (!isDragging || this.selected) return;
-                        currentX = e.deltaX;
-                        const rotation = currentX * 0.1;
-                        filmA.style.transform = `translateX(${currentX}px) rotate(${rotation}deg)`;
-                        
-                        // Zeige Swipe-Indikatoren
-                        if (currentX < -50) {
-                            this.showSwipeIndicator('left');
-                        } else if (currentX > 50) {
-                            this.showSwipeIndicator('right');
+                    // Initialize stats for all films
+                    this.allFilms.forEach(f => {
+                        if (!this.filmStats[f.id]) {
+                            this.filmStats[f.id] = { wins: 0, losses: 0, score: 1000, streak: 0 };
                         }
                     });
-                    
-                    this.hammer.on('panend', (e) => {
-                        if (!isDragging) return;
-                        isDragging = false;
-                        filmA.style.transition = 'transform 0.3s ease';
-                        
-                        const threshold = 100; // Mindestens 100px zum Swipen
-                        
-                        if (currentX < -threshold) {
-                            // Nach links geswiped = Film A gewinnt
-                            filmA.style.transform = 'translateX(-150%) rotate(-30deg)';
-                            setTimeout(() => {
-                                filmA.style.transform = '';
-                                this.chooseFilm(this.currentPair[0]);
-                            }, 200);
-                        } else if (currentX > threshold) {
-                            // Nach rechts geswiped = Film B gewinlt
-                            filmA.style.transform = 'translateX(150%) rotate(30deg)';
-                            setTimeout(() => {
-                                filmA.style.transform = '';
-                                this.chooseFilm(this.currentPair[1]);
-                            }, 200);
-                        } else {
-                            // Zurück zur Mitte
-                            filmA.style.transform = '';
-                        }
-                        
-                        currentX = 0;
-                    });
-                    
-                    // Fallback: Swipe Events
-                    this.hammer.on('swipeleft', (e) => {
-                        if (this.selected) return;
-                        this.showSwipeIndicator('left');
-                        filmA.style.transition = 'transform 0.3s ease';
-                        filmA.style.transform = 'translateX(-150%) rotate(-30deg)';
-                        setTimeout(() => {
-                            filmA.style.transform = '';
-                            this.chooseFilm(this.currentPair[0]);
-                        }, 300);
-                    });
-                    
-                    this.hammer.on('swiperight', (e) => {
-                        if (this.selected) return;
-                        this.showSwipeIndicator('right');
-                        filmA.style.transition = 'transform 0.3s ease';
-                        filmA.style.transform = 'translateX(150%) rotate(30deg)';
-                        setTimeout(() => {
-                            filmA.style.transform = '';
-                            this.chooseFilm(this.currentPair[1]);
-                        }, 300);
-                    });
                 },
                 
-                showSwipeIndicator(direction) {
-                    const indicator = document.getElementById(direction === 'left' ? 'swipeLeftIndicator' : 'swipeRightIndicator');
-                    if (indicator) {
-                        indicator.classList.add('show');
-                        setTimeout(() => indicator.classList.remove('show'), 300);
+                saveData() {
+                    try {
+                        const data = {
+                            filmStats: this.filmStats,
+                            rankingHistory: this.rankingHistory,
+                            totalDuelsAllTime: this.totalDuelsAllTime,
+                            lastUpdate: new Date().toISOString()
+                        };
+                        localStorage.setItem('imdbDuelData', JSON.stringify(data));
+                    } catch (e) {
+                        console.error('Save error:', e);
                     }
-                },
-                
-                onTouchStart(e, film) {
-                    this.touchStartY = e.touches[0].clientY;
-                },
-                
-                onTouchEnd(e, film) {
-                    const touchEndY = e.changedTouches[0].clientY;
-                    const diff = this.touchStartY - touchEndY;
-                    if (Math.abs(diff) < 10) {
-                        // Tap
-                    }
-                },
-                
-                // VERBESSERTES ELO-SYSTEM
-                calculateDynamicK(filmId) {
-                    const stats = this.filmStats[filmId];
-                    if (!stats) return 40;
-                    
-                    const totalGames = stats.wins + stats.losses;
-                    
-                    // Dynamischer K-Faktor basierend auf Erfahrung
-                    if (totalGames < 5) return 60;      // Neue Filme: höhere Volatilität
-                    if (totalGames < 15) return 40;     // Etablierte Filme: normal
-                    if (totalGames < 30) return 30;     // Erfahrene Filme: stabilisierend
-                    return 20;                           // Sehr erfahrene Filme: sehr stabil
-                },
-                
-                calculateWinStreakBonus(winnerId, loserId) {
-                    const winnerStats = this.filmStats[winnerId];
-                    const loserStats = this.filmStats[loserId];
-                    
-                    let bonus = 0;
-                    
-                    // Win-Streak Bonus
-                    if (winnerStats.streak >= 3) {
-                        bonus += winnerStats.streak * 2; // +2 pro Streak
-                    }
-                    
-                    // Upset Bonus (Unterdog schlägt Favorit)
-                    if (winnerStats.score < loserStats.score - 100) {
-                        bonus += 15; // Extra Punkte für Überraschungssieg
-                    }
-                    
-                    return bonus;
                 },
                 
                 resetSession() {
                     this.comparisons = 0;
                     this.usedPairs.clear();
-                    // filmStats NICHT zurücksetzen - bleibt persistent!
-                    
-                    // Initialisiere fehlende Stats für neue Filme
-                    this.allFilms.forEach(f => {
-                        if (!this.filmStats[f.id]) {
-                            this.filmStats[f.id] = { 
-                                wins: 0, 
-                                losses: 0, 
-                                score: 1000,
-                                streak: 0,
-                                lastResult: null
-                            };
-                        }
-                    });
                 },
                 
                 generatePair() {
-                    // Smart Pairing: Versuche Filme mit ähnlichem ELO zu paaren
-                    const availableFilms = [...this.films].filter(f => {
-                        // Filtere Filme die schon oft gespielt haben in dieser Session
-                        const filmKey = `film-${f.id}`;
-                        return !this.usedPairs.has(filmKey);
-                    });
+                    const available = [...this.allFilms].sort(() => 0.5 - Math.random());
                     
-                    if (availableFilms.length < 2) {
-                        // Reset wenn keine Paare mehr möglich
-                        this.usedPairs.clear();
-                        return this.generatePair();
+                    // Try to find films with similar ELO
+                    for (let i = 0; i < available.length - 1; i++) {
+                        for (let j = i + 1; j < available.length; j++) {
+                            const filmA = available[i];
+                            const filmB = available[j];
+                            const pairKey = [filmA.id, filmB.id].sort().join('-');
+                            
+                            if (!this.usedPairs.has(pairKey)) {
+                                const scoreDiff = Math.abs(this.filmStats[filmA.id].score - this.filmStats[filmB.id].score);
+                                if (scoreDiff <= 200 || Math.random() > 0.7) {
+                                    this.currentPair = [filmA, filmB];
+                                    this.usedPairs.add(pairKey);
+                                    return;
+                                }
+                            }
+                        }
                     }
                     
-                    // Sortiere nach ELO für bessere Matches
-                    availableFilms.sort((a, b) => this.filmStats[b.id].score - this.filmStats[a.id].score);
-                    
-                    // Wähle zufälligen Film aus Top-Hälfte
-                    const midPoint = Math.floor(availableFilms.length / 2);
-                    const filmAIndex = Math.floor(Math.random() * midPoint);
-                    const filmA = availableFilms[filmAIndex];
-                    
-                    // Finde ähnlichen Gegner (±200 ELO Punkte)
-                    const filmAScore = this.filmStats[filmA.id].score;
-                    const similarFilms = availableFilms.filter((f, idx) => {
-                        if (idx === filmAIndex) return false;
-                        const scoreDiff = Math.abs(this.filmStats[f.id].score - filmAScore);
-                        return scoreDiff <= 200;
-                    });
-                    
-                    let filmB;
-                    if (similarFilms.length > 0) {
-                        filmB = similarFilms[Math.floor(Math.random() * similarFilms.length)];
-                    } else {
-                        // Fallback: zufällige Auswahl
-                        const remaining = availableFilms.filter((_, idx) => idx !== filmAIndex);
-                        filmB = remaining[Math.floor(Math.random() * remaining.length)];
-                    }
-                    
-                    this.currentPair = [filmA, filmB];
-                    this.usedPairs.add(`film-${filmA.id}`);
-                    this.usedPairs.add(`film-${filmB.id}`);
+                    // Fallback: random pair
+                    this.currentPair = [available[0], available[1]];
+                    this.usedPairs.add([available[0].id, available[1].id].sort().join('-'));
+                },
+                
+                getDynamicK(filmId) {
+                    const stats = this.filmStats[filmId];
+                    const games = stats.wins + stats.losses;
+                    if (games < 5) return 60;
+                    if (games < 15) return 40;
+                    if (games < 30) return 30;
+                    return 20;
                 },
                 
                 chooseFilm(winner) {
@@ -1209,56 +905,37 @@
                     this.selected = winner === this.currentPair[0] ? 'A' : 'B';
                     const loser = this.currentPair.find(f => f.id !== winner.id);
                     
-                    // Haptisches Feedback
+                    // Haptic feedback
                     if (navigator.vibrate) navigator.vibrate(50);
                     
-                    // Karten-Animation zurücksetzen (Mobile)
-                    if (window.innerWidth <= 640) {
-                        const filmA = document.getElementById('filmA');
-                        if (filmA) {
-                            filmA.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-                            filmA.style.transform = '';
-                        }
+                    // Calculate ELO change
+                    const k = (this.getDynamicK(winner.id) + this.getDynamicK(loser.id)) / 2;
+                    const expected = 1 / (1 + Math.pow(10, (this.filmStats[loser.id].score - this.filmStats[winner.id].score) / 400));
+                    let change = k * (1 - expected);
+                    
+                    // Streak bonus
+                    if (this.filmStats[winner.id].streak >= 2) {
+                        change += this.filmStats[winner.id].streak * 2;
                     }
                     
-                    // VERBESSERTES ELO-SYSTEM
-                    const winnerStats = this.filmStats[winner.id];
-                    const loserStats = this.filmStats[loser.id];
+                    // Upset bonus
+                    if (this.filmStats[winner.id].score < this.filmStats[loser.id].score - 100) {
+                        change += 15;
+                    }
                     
-                    // Dynamische K-Faktoren
-                    const kWinner = this.calculateDynamicK(winner.id);
-                    const kLoser = this.calculateDynamicK(loser.id);
-                    const avgK = (kWinner + kLoser) / 2;
+                    // Update scores
+                    this.filmStats[winner.id].score += change;
+                    this.filmStats[loser.id].score -= change;
+                    this.filmStats[winner.id].wins++;
+                    this.filmStats[loser.id].losses++;
                     
-                    // Erwartungswert berechnen
-                    const expectedWinner = 1 / (1 + Math.pow(10, (loserStats.score - winnerStats.score) / 400));
-                    
-                    // Grundlegende Punktänderung
-                    let pointChange = avgK * (1 - expectedWinner);
-                    
-                    // Zusätzliche Bonus-Punkte
-                    pointChange += this.calculateWinStreakBonus(winner.id, loser.id);
-                    
-                    // Score aktualisieren
-                    winnerStats.score += pointChange;
-                    loserStats.score -= pointChange;
-                    
-                    // Stats aktualisieren
-                    winnerStats.wins++;
-                    loserStats.losses++;
-                    
-                    // Streaks aktualisieren
-                    winnerStats.streak = (winnerStats.lastResult === 'win') ? winnerStats.streak + 1 : 1;
-                    loserStats.streak = 0;
-                    
-                    winnerStats.lastResult = 'win';
-                    loserStats.lastResult = 'loss';
+                    // Update streaks
+                    this.filmStats[winner.id].streak = (this.filmStats[winner.id].streak || 0) + 1;
+                    this.filmStats[loser.id].streak = 0;
                     
                     this.comparisons++;
                     this.totalDuelsAllTime++;
-                    
-                    // Persistente Speicherung
-                    this.savePersistentData();
+                    this.saveData();
                     
                     setTimeout(() => {
                         this.selected = null;
@@ -1270,7 +947,7 @@
                     }, 400);
                 },
                 
-                skipBoth() {
+                skipPair() {
                     if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
                     this.generatePair();
                 },
@@ -1278,166 +955,74 @@
                 finishSession() {
                     this.mode = 'building';
                     
-                    // Speichere Ranking in Historie
-                    this.calculateRankings();
-                    this.saveToHistory();
-                    
-                    setTimeout(() => {
-                        this.mode = 'results';
-                    }, 1200);
-                },
-                
-                calculateRankings() {
+                    // Calculate rankings
                     this.rankings = Object.entries(this.filmStats)
                         .map(([id, stats]) => {
                             const film = this.allFilms.find(f => f.id === parseInt(id));
-                            return { 
-                                ...film, 
-                                ...stats,
-                                winRate: stats.wins + stats.losses > 0 
-                                    ? (stats.wins / (stats.wins + stats.losses) * 100).toFixed(1)
-                                    : 0
-                            };
+                            return { ...film, ...stats };
                         })
-                        .filter(f => f.wins > 0 || f.losses > 0)
+                        .filter(f => f.wins + f.losses > 0)
                         .sort((a, b) => b.score - a.score);
-                },
-                
-                saveToHistory() {
-                    const top3 = this.rankings.slice(0, 3).map(f => f.title);
-                    const historyEntry = {
+                    
+                    // Save to history
+                    this.rankingHistory.unshift({
                         date: new Date().toISOString(),
-                        top3: top3,
-                        totalDuels: this.comparisons,
-                        rankings: [...this.rankings], // Kopie des Rankings
-                        allTimeDuels: this.totalDuelsAllTime
-                    };
+                        top3: this.rankings.slice(0, 3).map(f => f.title),
+                        rankings: [...this.rankings]
+                    });
                     
-                    this.rankingHistory.unshift(historyEntry);
-                    
-                    // Max 50 Einträge behalten
                     if (this.rankingHistory.length > 50) {
                         this.rankingHistory = this.rankingHistory.slice(0, 50);
                     }
                     
-                    this.savePersistentData();
+                    this.saveData();
+                    
+                    setTimeout(() => {
+                        this.mode = 'results';
+                    }, 1500);
                 },
                 
-                getFilmStats(filmId) {
-                    return this.filmStats[filmId] || null;
-                },
-                
-                formatDate(dateString) {
-                    const date = new Date(dateString);
-                    return date.toLocaleDateString('de-DE', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                },
-                
-                loadHistoryRanking(index) {
-                    const entry = this.rankingHistory[index];
-                    if (entry && entry.rankings) {
-                        this.rankings = entry.rankings;
-                        this.showHistory = false;
-                    }
+                getFilmStats(id) {
+                    return this.filmStats[id] || null;
                 },
                 
                 shareResults() {
-                    const winner = this.rankings[0]?.title || 'Film';
-                    const stats = `🏆 ${winner} führt nach ${this.totalDuelsAllTime} Duelle!`;
-                    const top3 = this.rankings.slice(0, 3).map((f, i) => `${i+1}. ${f.title}`).join('\n');
-                    const text = `${stats}\n\nMeine Top 3:\n${top3}\n\nSpiel auch:`;
+                    const winner = this.rankings[0]?.title;
+                    const text = `🏆 Mein IMDb Favorit: ${winner}!\n\nTop 3:\n1. ${this.rankings[0]?.title}\n2. ${this.rankings[1]?.title}\n3. ${this.rankings[2]?.title}\n\nSpiel auch:`;
                     
                     if (navigator.share) {
-                        navigator.share({ 
-                            title: 'IMDb Duell - Meine Topliste', 
-                            text: text, 
-                            url: window.location.href 
-                        }).catch(() => {});
+                        navigator.share({ title: 'IMDb Duell', text, url: window.location.href });
                     } else {
-                        navigator.clipboard.writeText(text + '\n' + window.location.href);
-                        this.showToast('Ergebnis kopiert!');
+                        navigator.clipboard.writeText(text + ' ' + window.location.href);
+                        alert('Kopiert!');
                     }
-                },
-                
-                exportRankings() {
-                    const exportData = {
-                        exportDate: new Date().toISOString(),
-                        totalDuels: this.totalDuelsAllTime,
-                        filmStats: this.filmStats,
-                        rankingHistory: this.rankingHistory,
-                        currentRankings: this.rankings
-                    };
-                    
-                    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `imdb-duell-rankings-${new Date().toISOString().split('T')[0]}.json`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    
-                    this.showToast('Rankings exportiert!');
                 },
                 
                 restart() {
                     this.mode = 'duel';
                     this.resetSession();
                     this.generatePair();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    window.scrollTo(0, 0);
                 },
                 
-                // PERSISTENTE SPEICHERUNG
-                savePersistentData() {
-                    try {
-                        const data = {
-                            filmStats: this.filmStats,
-                            rankingHistory: this.rankingHistory,
-                            totalDuelsAllTime: this.totalDuelsAllTime,
-                            lastUpdated: new Date().toISOString()
-                        };
-                        localStorage.setItem('imdbDuelPersistent', JSON.stringify(data));
-                    } catch (e) {
-                        console.warn('Speichern fehlgeschlagen:', e);
-                    }
-                },
-                
-                loadPersistentData() {
-                    try {
-                        const saved = localStorage.getItem('imdbDuelPersistent');
-                        if (saved) {
-                            const data = JSON.parse(saved);
-                            this.filmStats = data.filmStats || {};
-                            this.rankingHistory = data.rankingHistory || [];
-                            this.totalDuelsAllTime = data.totalDuelsAllTime || 0;
-                        }
-                    } catch (e) {
-                        console.warn('Laden fehlgeschlagen:', e);
-                    }
-                },
-                
-                showToast(message) {
-                    const toast = document.getElementById('toast');
-                    toast.textContent = message;
-                    toast.classList.add('show');
-                    setTimeout(() => toast.classList.remove('show'), 2000);
-                },
-                
-                registerServiceWorker() {
-                    if ('serviceWorker' in navigator) {
-                        const swCode = `
-                            self.addEventListener('install', e => self.skipWaiting());
-                            self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-                            self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline'))));
-                        `;
-                        const blob = new Blob([swCode], { type: 'application/javascript' });
-                        const swUrl = URL.createObjectURL(blob);
-                        navigator.serviceWorker.register(swUrl).catch(() => {});
-                    }
+                initGestures() {
+                    if (!window.Hammer) return;
+                    
+                    const container = document.getElementById('cardsContainer');
+                    if (!container) return;
+                    
+                    const mc = new Hammer(container);
+                    mc.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
+                    
+                    // Swipe up = top card wins (Film A)
+                    mc.on('swipeup', () => {
+                        this.chooseFilm(this.currentPair[0]);
+                    });
+                    
+                    // Swipe down = bottom card wins (Film B)
+                    mc.on('swipedown', () => {
+                        this.chooseFilm(this.currentPair[1]);
+                    });
                 }
             }
         }
