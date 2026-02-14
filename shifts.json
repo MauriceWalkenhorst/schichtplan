@@ -1,12 +1,5 @@
 [
   {
-    "title": "q: 01.03 Platzanweiser (Usher)",
-    "start": "2026-01-14T15:30:00",
-    "end": "2026-01-15T00:00:00",
-    "description": "01.03 Platzanweiser (Usher) 15:30 - 00:00",
-    "location": "12: UCI Ruhr Park (RP)"
-  },
-  {
     "title": "q: 01.02 F&B",
     "start": "2026-01-15T16:30:00",
     "end": "2026-01-15T21:00:00",
@@ -38,14 +31,14 @@
     "title": "q: [*] 01.03 Platzanweiser (Usher)",
     "start": "2026-01-23T16:00:00",
     "end": "2026-01-23T23:30:00",
-    "description": "* Tausch angefragt, warte auf Bestätigung",
+    "description": "* Tausch angefragt, warte auf Best\u00e4tigung",
     "location": "12: UCI Ruhr Park (RP)"
   },
   {
     "title": "q: [*] 01.03 Platzanweiser (Usher)",
     "start": "2026-01-25T19:00:00",
     "end": "2026-01-25T23:00:00",
-    "description": "* Tausch angefragt, warte auf Bestätigung",
+    "description": "* Tausch angefragt, warte auf Best\u00e4tigung",
     "location": "12: UCI Ruhr Park (RP)"
   },
   {
@@ -59,7 +52,7 @@
     "title": "q: 01.03 Platzanweiser (Usher)",
     "start": "2026-01-30T15:30:00",
     "end": "2026-01-30T21:30:00",
-    "description": "Säle 8-14",
+    "description": "S\u00e4le 8-14",
     "location": "12: UCI Ruhr Park (RP)"
   },
   {
@@ -101,21 +94,21 @@
     "title": "q: 01.03 Platzanweiser (Usher)",
     "start": "2026-02-13T15:30:00",
     "end": "2026-02-13T21:00:00",
-    "description": "Säle 8-14",
+    "description": "S\u00e4le 8-14",
     "location": "12: UCI Ruhr Park (RP)"
   },
   {
-    "title": "q: 01.03 Platzanweiser (Usher)",
+    "title": "q: 01.04 Kinokasse (Boxoffice)",
     "start": "2026-02-15T16:00:00",
-    "end": "2026-02-16T00:00:00",
-    "description": "Säle 1-7",
+    "end": "2026-02-15T23:45:00",
+    "description": "01.04 Kinokasse (Boxoffice) 16:00 - 23:45",
     "location": "12: UCI Ruhr Park (RP)"
   },
   {
     "title": "q: [*] 01.03 Platzanweiser (Usher)",
     "start": "2026-02-16T19:00:00",
     "end": "2026-02-17T00:00:00",
-    "description": "* Tausch angefragt, warte auf Bestätigung",
+    "description": "* Tausch angefragt, warte auf Best\u00e4tigung",
     "location": "12: UCI Ruhr Park (RP)"
   }
 ]
