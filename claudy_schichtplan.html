@@ -537,7 +537,14 @@
 
     function renderList(groups) {
       const container = document.getElementById('shiftsList');
-      const months = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+      // Sort months - future first, then past
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+      const months = Object.keys(groups).sort((a, b) => {
+        if (a >= currentMonth && b < currentMonth) return -1;
+        if (a < currentMonth && b >= currentMonth) return 1;
+        return b.localeCompare(a); // newest first within each group
+      });
       const now = new Date();
       const curr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
       
