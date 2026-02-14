@@ -182,6 +182,40 @@
       background-clip: text;
     }
 
+    .cost-breakdown {
+      margin-bottom: 2rem;
+    }
+
+    .cost-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .cost-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      border-color: rgba(34, 197, 94, 0.3);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), transparent);
+    }
+
+    .cost-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .cost-amount {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #22c55e;
+    }
+
     /* Agent Grid */
     .section-title {
       font-size: 1.125rem;
@@ -467,6 +501,24 @@
       </div>
     </div>
 
+    <div class="cost-breakdown">
+      <h2 class="section-title">💰 Kosten-Übersicht</h2>
+      <div class="cost-grid">
+        <div class="cost-card">
+          <div class="cost-label">Heute</div>
+          <div class="cost-amount" id="costTodayDetail">$0.00</div>
+        </div>
+        <div class="cost-card">
+          <div class="cost-label">Diese Woche</div>
+          <div class="cost-amount" id="costWeek">$0.00</div>
+        </div>
+        <div class="cost-card">
+          <div class="cost-label">Gesamt</div>
+          <div class="cost-amount" id="costTotal">$0.00</div>
+        </div>
+      </div>
+    </div>
+
     <h2 class="section-title">🤖 Aktive Agents</h2>
     <div class="agents-grid" id="agentsGrid">
       <div class="loading">
@@ -623,24 +675,27 @@
     }
 
     // Cost data (loaded from JSON)
-    let costData = { today: 0, month: 0 };
+    let costData = { today: 0, week: 0, total: 0 };
     
     async function loadCostData() {
       try {
         const response = await fetch('usage_stats.json');
         const data = await response.json();
         
-        // Calculate costs based on token usage
-        // MiniMax M2.5: $0.015/1K input, $0.06/1K output
-        const inputCost = (data.totalInputTokens || 0) * 0.015 / 1000;
-        const outputCost = (data.totalOutputTokens || 0) * 0.06 / 1000;
-        const totalCost = inputCost + outputCost;
+        costData.today = data.costToday || 0;
+        costData.total = data.totalCost || 0;
+        costData.week = costData.today * 5; // Estimate
         
-        costData.today = totalCost;
-        document.getElementById('costToday').textContent = '$' + totalCost.toFixed(2);
+        document.getElementById('costToday').textContent = '$' + costData.today.toFixed(2);
+        document.getElementById('costTodayDetail').textContent = '$' + costData.today.toFixed(2);
+        document.getElementById('costWeek').textContent = '$' + costData.week.toFixed(2);
+        document.getElementById('costTotal').textContent = '$' + costData.total.toFixed(2);
       } catch (e) {
-        // Fallback to demo data
+        console.log('Using default cost data');
         document.getElementById('costToday').textContent = '$0.00';
+        document.getElementById('costTodayDetail').textContent = '$0.00';
+        document.getElementById('costWeek').textContent = '$0.00';
+        document.getElementById('costTotal').textContent = '$0.00';
       }
     }
 
