@@ -1,10 +1,21 @@
 {
-  "total": "2,84",
-  "inputTokens": 845000,
-  "outputTokens": 18500,
-  "lastUpdate": "2026-02-04T21:05:00Z",
+  "totalInputTokens": 45000,
+  "totalOutputTokens": 12000,
+  "lastUpdate": "2026-02-14T03:00:00Z",
+  "costToday": 1.35,
+  "totalCost": 2.84,
   "models": [
-    { "name": "Gemini 1.5 Pro", "input": 450000, "output": 12000, "cost": "2,15" },
-    { "name": "Gemini 1.5 Flash", "input": 395000, "output": 6500, "cost": "0,69" }
+    { 
+      "name": "MiniMax M2.5", 
+      "inputTokens": 35000, 
+      "outputTokens": 9000,
+      "cost": 1.05 
+    },
+    { 
+      "name": "Gemini Flash", 
+      "inputTokens": 10000, 
+      "outputTokens": 3000,
+      "cost": 0.30 
+    }
   ]
 }

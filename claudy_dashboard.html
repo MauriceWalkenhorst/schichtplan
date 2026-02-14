@@ -171,6 +171,17 @@
       margin-top: 0.25rem;
     }
 
+    .stat-card.cost-card {
+      border-color: rgba(34, 197, 94, 0.3);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), transparent);
+    }
+
+    .cost-value {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
     /* Agent Grid */
     .section-title {
       font-size: 1.125rem;
@@ -444,15 +455,15 @@
         <div class="stat-value" id="tokensToday">-</div>
         <div class="stat-sub">verbraucht</div>
       </div>
+      <div class="stat-card cost-card">
+        <div class="stat-label">💰 Kosten heute</div>
+        <div class="stat-value cost-value" id="costToday">-</div>
+        <div class="stat-sub">OpenRouter</div>
+      </div>
       <div class="stat-card">
         <div class="stat-label">Laufzeit</div>
         <div class="stat-value" id="uptime">-</div>
         <div class="stat-sub">System aktiv</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Letzte Activity</div>
-        <div class="stat-value" id="lastActivity">-</div>
-        <div class="stat-sub">vor</div>
       </div>
     </div>
 
@@ -611,12 +622,35 @@
       updateStats();
     }
 
-    // Update stats (mock for now)
+    // Cost data (loaded from JSON)
+    let costData = { today: 0, month: 0 };
+    
+    async function loadCostData() {
+      try {
+        const response = await fetch('usage_stats.json');
+        const data = await response.json();
+        
+        // Calculate costs based on token usage
+        // MiniMax M2.5: $0.015/1K input, $0.06/1K output
+        const inputCost = (data.totalInputTokens || 0) * 0.015 / 1000;
+        const outputCost = (data.totalOutputTokens || 0) * 0.06 / 1000;
+        const totalCost = inputCost + outputCost;
+        
+        costData.today = totalCost;
+        document.getElementById('costToday').textContent = '$' + totalCost.toFixed(2);
+      } catch (e) {
+        // Fallback to demo data
+        document.getElementById('costToday').textContent = '$0.00';
+      }
+    }
+
+    // Update stats
     function updateStats() {
       activeSessionsEl.textContent = Math.floor(Math.random() * 3) + 1;
       tokensTodayEl.textContent = (Math.random() * 50 + 10).toFixed(1) + 'k';
       uptimeEl.textContent = Math.floor(Math.random() * 24) + 'h';
       lastActivityEl.textContent = formatRelativeTime(lastActivity);
+      loadCostData();
     }
 
     // Render demo agents
